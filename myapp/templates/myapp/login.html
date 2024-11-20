@@ -1,0 +1,118 @@
+{% extends 'myapp/base.html' %}
+{% load static %}
+{% block content %}
+
+<section class="section-content padding-y" style="min-height:84vh">
+
+  <div class="card mx-auto" style="max-width: 400px; margin-top:10px;">
+    <img class="card-img-top" src="{% static 'myapp/images/pexels-markus-winkler-1430818-13516674.jpg' %}" alt="Login Image" style="width: 100%; height: auto;">
+
+    {% if messages %}
+    <div id="messages">
+      {% for message in messages %}
+      <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show" role="alert" id="message">
+        <div class="alert-content">
+          {{ message }}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="card-body" style="background-color: #fff; padding: 2rem;">
+      <div class="mb-2 text-center">
+        <span><strong style="font-size:22px;">Login</strong> or <strong style="font-size:22px;">Signup</strong></span>
+      </div>
+
+      <form method="post" novalidate>
+        {% csrf_token %}
+        
+        <div class="mb-3">
+          <label for="{{ form.email.id_for_label }}" class="form-label">{{ form.email.label }}</label>
+          {{ form.email }}
+          <ul class="errors">
+            {% for error in form.email.errors %}
+            <li>{{ error }}</li>
+            {% endfor %}
+          </ul>
+          <small>{{ form.email.help_text }}</small>
+        </div>
+
+        <div class="mt-3 text-center">
+          <small class="mt-2">By continuing, I agree to the <strong style="color:#ff9017;">Terms of Use</strong> & <strong style="color:#ff9017;">Privacy Policy</strong></small>
+        </div>
+
+        <div class="mt-3">
+          <button type="submit" class="btn btn-primary w-100" style="background:#ff9017; border:#ff9017;">Continue</button>
+        </div>
+      </form>
+
+      <div class="mt-3 text-center">
+        <small class="mt-2">Having trouble logging in? <strong style="color:#ff9017;">Get help</strong></small>
+      </div>
+
+    </div> <!-- card-body.// -->
+  </div> <!-- card .// -->
+</section>
+
+<style>
+  .errors {
+    color: red;
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    font-size: 10px;
+  }
+
+  .alert {
+    font-size: 14px;
+    text-align: center; /* Center the text inside the alert */
+    opacity: 1;
+    transition: opacity 1s ease-out; /* Add fade-out transition */
+  }
+
+  .alert-content {
+    padding: 10px;
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .card {
+      max-width: 90%; /* Allows the card to be a bit smaller on mobile */
+    }
+    .card-body {
+      padding: 1rem;
+    }
+    img.card-img-top {
+      width: 100%;
+      height: auto;
+    }
+  }
+
+  /* Ensure the form inside the card has a white background */
+  .card-body {
+    background-color: #fff;
+    padding: 2rem;
+    border-radius: 8px; /* Optional: rounded corners for the form */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Optional: subtle shadow */
+  }
+
+  /* Style for error messages */
+  .errors li {
+    font-size: 12px;
+  }
+</style>
+
+<script>
+  // JavaScript to make the message fade after 5 seconds
+  window.addEventListener('load', function () {
+    const messages = document.querySelectorAll('.alert');
+    messages.forEach(function (message) {
+      setTimeout(function () {
+        message.style.opacity = 0; // Fade out the message
+      }, 5000); // After 5 seconds
+    });
+  });
+</script>
+
+{% endblock %}
