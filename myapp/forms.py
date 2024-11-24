@@ -123,12 +123,6 @@ class UserForm(forms.ModelForm):
             self.fields[field].widget.attrs['class'] = 'form-control'
 
 
-# class UserDetailsForm(forms.Form):
-#     first_name = forms.CharField(max_length=50,label='',label_suffix='', required=True, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter first name'}))
-#     last_name = forms.CharField(max_length=50, label='',label_suffix='',required=True, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter last name'}))
-#     phone_number = PhoneNumberField( label="",label_suffix=' ',widget=forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Enter Contact'}))
-
-
 class UserDetailsForm(forms.Form):
     address_line_1 = forms.CharField(
         max_length=100,

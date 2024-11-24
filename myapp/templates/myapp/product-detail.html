@@ -1,381 +1,521 @@
 {% extends 'myapp/base.html' %}
 {% load static %}
 {% block content %}
+
 <style>
-	.custom-file {
-		margin-bottom: 10px; /* Add some bottom margin for spacing */
-	}
 
-	.custom-file-input {
-		width: 50%; /* Set the width to half of the container */
-		display: inline-block; /* Display the input elements in a row */
-	}
+.rating-container {
+margin-bottom: 1rem;
+}
 
-	/* Optional: Style the label to match the input */
-	.custom-file-label {
-		display: inline-block;
-		width: Auto;
-		background-color: ; /* Example background color */
-		color: grey; /* Example text color */
-		padding: 8px;
-		border-radius: 5px;
-		cursor: pointer;
-	}
+.star {
+font-size: 20px;
+color: #ccc;
+cursor: pointer;
+transition: color 0.3s ease-in-out;
+}
+
+.star.selected {
+color: gold;
+}
+.text-muted {
+font-size: 0.9rem;
+}
+.custom-file-label {
+overflow: hidden;
+}
+
+.thumb-link img.selected {
+border: 2px solid #ff9017;
+border-radius: 4px; /* Optional: To make corners slightly rounded */
+}
+
+.star {
+font-size: 20px;
+color: #ccc;
+cursor: pointer;
+transition: color 0.3s ease-in-out;
+}
+.star.selected {
+color: gold;
+}
+.rating-container {
+margin-bottom: 1rem;
+}
+.text-muted {
+font-size: 0.9rem;
+}
+
+.title1{
+font-size:21px;
+}
+
+.offers-list {
+   margin-top: 20px;
+   padding: 10px;
+}
+.offer-card {
+   background-color: #f9f9f9;
+   border: 1px solid #ddd;
+   border-radius: 8px;
+   margin-bottom: 15px;
+   padding: 15px;
+   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+.offer-item {
+   margin-bottom: 10px;
+   font-size: 14px;
+}
+.offer-label {
+   font-weight: bold;
+   color: #333;
+}
+.offer-details {
+   color: #555;
+   margin-left: 5px;
+}
+h4 {
+   font-size: 20px;
+   font-weight: 600;
+   margin-bottom: 15px;
+}
+
 </style>
+
+
 <section class="section-content padding-y bg">
-	<div class="container">
-		{% include 'myapp/includes/message.html' %}
-	</div>
-<div class="container">
-<div class="card">
-	<div class="row no-gutters">
-		<aside class="col-md-6">
-			<article class="gallery-wrap">
-				<div class="img-big-wrap mainImage text-center">
-					<img src="{{data.images.url}}" class="img-fluid" alt="Main Image">
-				</div> <!-- img-big-wrap.// -->
-			</article> <!-- gallery-wrap .end// -->
-
-			<!-- Thumbnail Gallery -->
-			<div class="thumb-gallery d-flex justify-content-center mt-3">
-				<ul class="thumb d-flex flex-wrap justify-content-center">
-					<!-- Main Image as Thumbnail -->
-					<li class="mr-2">
-						<a href="{{data.images.url}}" target="mainImage">
+   <div class="container">
+      {% include 'myapp/includes/message.html' %}
+   </div>
+   <div class="container">
+      <div class="card">
+         <div class="row no-gutters">
+			<aside class="col-md-6">
+				<article class="gallery-wrap">
+				   <div class="img-big-wrap mainImage text-center">
+					  <img src="{{data.images.url}}" class="img-fluid" alt="Main Image" id="mainImage">
+				   </div>
+				   <!-- img-big-wrap.// -->
+				</article>
+				<!-- gallery-wrap .end// -->
+				<!-- Thumbnail Gallery -->
+				<div class="thumb-gallery d-flex justify-content-center mt-3">
+				   <ul class="thumb d-flex flex-wrap justify-content-center">
+					  <!-- Main Image as Thumbnail -->
+					  <li class="mr-2">
+						 <a href="{{data.images.url}}" class="thumb-link">
 							<img src="{{data.images.url}}" alt="ProductGallery" class="img-thumbnail">
-						</a>
-					</li>
-
-					<!-- Loop through product_gallery for additional images -->
-					{% for image in product_gallery %}
-					<li class="mr-2">
-						<a href="{{image.img.url}}" target="mainImage">
+						 </a>
+					  </li>
+					  <!-- Loop through product_gallery for additional images -->
+					  {% for image in product_gallery %}
+					  <li class="mr-2">
+						 <a href="{{image.img.url}}" class="thumb-link">
 							<img src="{{image.img.url}}" alt="ProductGallery" class="img-thumbnail">
-						</a>
-					</li>
-					{% endfor %}
-				</ul>
-			</div> 
-		</aside>	
-		<main class="col-md-6 border-left">
+						 </a>
+					  </li>
+					  {% endfor %}
+				   </ul>
+				</div>
+			 </aside>
 
 
-<form action="{% url 'AddCart' data.id %}" method="POST"> {% csrf_token %}
+				<main class="col-md-6 border-left">
+               <form action="{% url 'AddCart' data.id %}" method="POST">
+                  {% csrf_token %}
+                  <article class="content-body">
+                     <small class="brandj">{{data.brand}}</small>
+                     <h3 class="title1">{{data.name}}</h3>
 
-      <article class="content-body">
-				<small class="brandj">{{data.brand}}</small>
-      <h3 class="title">{{data.name}}</h3>
-			<span class="sddsdd">Special price</span>
-			<div class="d-flex align-items justify-content mt-2">
-			<h3 class="font-weight-semi-bold mb-4">र{{data.sprice}} <small class="smalgsd">र{{data.price}} </small><span class="spanhyh">{{percentage_discount}}% off</span> </h3>
-     </div>
+                     <div style="display: flex; align-items: center; justify-content: center; border: 1px solid #ddd; border-radius: 5px; width: 150px; height: 40px;">
+                        {% if data.countReview %}
+                        <div style="display: flex; align-items: center; flex-grow: 1;">
+                           <div style="text-align: center; flex-grow: 1;">
+                              <div class="_3LWZlK" style="font-size: 16px; font-weight: bold;">
+                                 {{ average_rating | floatformat:1 }}
+                                 <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMyIgaGVpZ2h0PSIxMiI+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTYuNSA5LjQzOWwtMy42NzQgMi4yMy45NC00LjI2LTMuMjEtMi44ODMgNC4yNTQtLjQwNEw2LjUuMTEybDEuNjkgNC4wMSA0LjI1NC40MDQtMy4yMSAyLjg4Mi45NCA0LjI2eiIvPjwvc3ZnPg==" class="_1wB99o _19cuvx" style="vertical-align: middle; margin-left: 5px;">
+                              </div>
+                              <span style="font-size: 12px; color: #555;">| {{ data.countReview }} Reviews</span>
+                           </div>
+                           <div style="border-left: 1px solid #ddd; height: 80%; margin: 0 10px;"></div>
+                        </div>
+                     {% else %}
+                        <div style="text-align: center; flex-grow: 1;">
+                           <div class="_3LWZlK _3uSWvT" style="font-size: 16px; font-weight: bold;">
+                              0
+                              <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMyIgaGVpZ2h0PSIxMiI+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTYuNSA5LjQzOWwtMy42NzQgMi4yMy45NC00LjI2LTMuMjEtMi44ODMgNC4yNTQtLjQwNEw2LjUuMTEybDEuNjkgNC4wMSA0LjI1NC40MDQtMy4yMSAyLjg4Mi45NCA0LjI2eiIvPjwvc3ZnPg==" class="_1wB99o _19cuvx" style="vertical-align: middle; margin-left: 5px;">
+                           </div>
+                           <span style="font-size: 12px; color: #555;">| No Rating Yet</span>
+                        </div>
+                     {% endif %}
+                     
+                     </div>
+                     <hr>
 
-			<div class="text-primary mr-2">
 
-{% if data.countReview %}
-<div class="_3LWZlK">
-	{{average_rating |floatformat:1 }}
-
-
-		<img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMyIgaGVpZ2h0PSIxMiI+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTYuNSA5LjQzOWwtMy42NzQgMi4yMy45NC00LjI2LTMuMjEtMi44ODMgNC4yNTQtLjQwNEw2LjUuMTEybDEuNjkgNC4wMSA0LjI1NC40MDQtMy4yMSAyLjg4Mi45NCA0LjI2eiIvPjwvc3ZnPg==" class="_1wB99o _19cuvx">
-</div>
- <span style="font-size:14px;">{{data.countReview}} Reviews</span>
-</div>
-
-{% else %}
-<div class="_3LWZlK _3uSWvT">
-0
-		<img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMyIgaGVpZ2h0PSIxMiI+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTYuNSA5LjQzOWwtMy42NzQgMi4yMy45NC00LjI2LTMuMjEtMi44ODMgNC4yNTQtLjQwNEw2LjUuMTEybDEuNjkgNC4wMSA0LjI1NC40MDQtMy4yMSAyLjg4Mi45NCA0LjI2eiIvPjwvc3ZnPg==" class="_1wB99o _19cuvx">
-</div>
-<span>No Rating Yet </span>
-</div>
-{% endif %}
-<br>
+                     
+                     <div class="d-flex align-items-center justify-content-start mt-2">
+                        <span style="font-size: 27px; font-weight: 600; color: #000; line-height: 1.2; margin-right: 10px;">
+                           ₹{{ data.sprice }}
+                        </span>
+                        <span style="font-size: 17px; margin-right: 5px; color: #555; vertical-align: middle;">
+                           MRP
+                        </span>
+                        <small style="vertical-align: middle;">
+                           <span style="text-decoration: line-through; font-size: 15px; color: #888;">₹{{ data.price }}</span>
+                        </small>
+                        <span style="font-size: 14px; margin-left: 6px; color: #28a745; vertical-align: middle;">
+                           ({{ percentage_discount | floatformat:0 }}% off)
+                        </span>
+                     </div>
+                     <div style="font-size: 12px; color: #0073e6; border-top: 1px solid #ddd; padding-top: 5px;">
+                        Inclusive of all taxes
+                     </div>
+         <br>
 <h4>Available Offer</h4>
-{% for offer in aval_offer %}
-
-    {% if offer.of1 %}
-        <p>{{ offer.of1 }}</p>
-    {% endif %}
-
-    {% if offer.of2 %}
-        <p>{{ offer.of2 }}</p>
-    {% endif %}
-
-    {% if offer.of3 %}
-        <p>{{ offer.of3 }}</p>
-    {% endif %}
-
-    {% if offer.of4 %}
-        <p>{{ offer.of4 }}</p>
-    {% endif %}
-
-    {% if offer.of5 %}
-        <p>{{ offer.of5 }}</p>
-    {% endif %}
-
-{% endfor %}
-      {% if data.description %}
-			<h4>Product Description</h4>
-      <p>{{data.description}}</p>
-			{% endif %}
-      <hr>
-        {% if data.variation_set.colors %}
-        	<div class="row">
-        		<div class="item-option-select">
-        			<h6>Choose Color</h6>
-              <select name="color" class="form-control" required>
-              <option value="" disabled selected>More Color</option>
-              {% for i in data.variation_set.colors %}
-              <option value="{{ i.variation_value }}">{{ i.variation_value | capfirst }}</option>
-              {% endfor %}
-              </select>
-        		</div>
-        	</div> <!-- row.// -->
-        {% endif %}
-
-        {% if data.variation_set.sizes %}
-      	<div class="row">
-      		<div class="item-option-select">
-      			<h6>Select Size</h6>
-            <select name="size" class="form-control" required>
-            <option value="" disabled selected>More Size</option>
-            {% for i in data.variation_set.sizes %}
-            <option value="{{ i.variation_value }}">{{ i.variation_value | capfirst }}</option>
-            {% endfor %}
-            </select>
-			<hr>
-	        {% if data.stock <= 0 %}
-        <h5 class="text-danger">Out of Stock</h5>
-        {% else %}
-        <button type="submit" class="btn btn-warning"> <span class="text">Add to cart</span><i class="fas fa-shopping-cart"></i></button>
-           {% endif %}
-      		</div>
-      	</div> <!-- row.// -->
-        {% endif %}
-      </article> <!-- product-info-aside .// -->
-
-</form>
-
-
-		</main> <!-- col.// -->
-	</div> <!-- row.// -->
-</div> <!-- card.// -->
-<!-- ============================ COMPONENT 1 END .// ================================= -->
-<br>
-<div class="container m-2">
-	<div class="row">
-		<div class="col-md-9">
-
-
-<form action="{% url 'SubmtReview' data.id %}" method="POST" enctype="multipart/form-data">
-   {% csrf_token %}
-	<h5>Write Your Review</h5>
-<br>
-	<div>
-
-	<label>How do you rate this product?</label>
-	<br>
-	<div class="rate">
-	<input type="radio" name="rating" id="rating10" value="5" required><label for="rating10" title="5"></label>
-	<input type="radio" name="rating" id="rating9" value="4.5" required><label for="rating9" title="4.5" class="half"></label>
-	<input type="radio" name="rating" id="rating8" value="4" required><label for="rating8" title="4"></label>
-	<input type="radio" name="rating" id="rating7" value="3.5" required><label for="rating7" title="3.5" class="half"></label>
-	<input type="radio" name="rating" id="rating6" value="3" required><label for="rating6" title="3"></label>
-	<input type="radio" name="rating" id="rating5" value="2.5" required><label for="rating5" title="2.5" class="half"></label>
-	<input type="radio" name="rating" id="rating4" value="2" required><label for="rating4" title="2"></label>
-	<input type="radio" name="rating" id="rating3" value="1.5" required><label for="rating3" title="1.5" class="half"></label>
-	<input type="radio" name="rating" id="rating2" value="1" required><label for="rating2" title="1"></label>
-	<input type="radio" name="rating" id="rating1" value="0.5" required><label for="rating1" title="0.5" class="half"></label>
-	</div>
-<br>
-	<!-- Review: -->
-	<input type="text" name="review" class="form-control" placeholder="Please give your feedback" rows="2" required>
-	<br>
-<label for="imageUpload">Select product images</label><br>
-
-
-<div class="custom-file">
-	<input type="file" class="custom-file-input" id="customFile" name="images" multiple>
-	<label class="custom-file-label" for="customFile">Select up to 5 Images</label>
+<div class="offers-list">
+   {% for offer in aval_offer %}
+      <div class="offer-card">
+         {% if offer.of1 %}
+            <ul class="offer-list">
+               <li><span class="offer-details">{{ offer.of1 }}</span></li>
+            </ul>
+         {% endif %}
+         {% if offer.of2 %}
+            <ul class="offer-list">
+               <li><span class="offer-details">{{ offer.of2 }}</span></li>
+            </ul>
+         {% endif %}
+         {% if offer.of3 %}
+            <ul class="offer-list">
+               <li><span class="offer-details">{{ offer.of3 }}</span></li>
+            </ul>
+         {% endif %}
+         {% if offer.of4 %}
+            <ul class="offer-list">
+               <li><span class="offer-details">{{ offer.of4 }}</span></li>
+            </ul>
+         {% endif %}
+         {% if offer.of5 %}
+            <ul class="offer-list">
+               <li><span class="offer-details">{{ offer.of5 }}</span></li>
+            </ul>
+         {% endif %}
+      </div>
+   {% endfor %}
 </div>
 
-	<br>
-	{% if user.is_authenticated %}
-		{% if orderproduct %}
-		<input type="submit" class="btn btn-warning" name="" value="Add">
-	{% else %}
-			<p>You must purchase this product to post a review.</p>
-		{% endif %}
-	{% else %}
-	<p>You must logged in to post a review. <span><a href="{% url 'Login' %}">Login Now</a></span></p>
-{% endif %}
-	</div>
+         
 
- </form>
- <hr>
+         {% if data.description %}
+         <h4>Product Description</h4>
+         <p>{{data.description}}</p>
+         {% endif %}
+         <hr>
+         {% if data.variation_set.colors %}
+         <div class="row">
+         <div class="item-option-select">
+         <h6>Choose Color</h6>
+         <select name="color" class="form-control" required>
+         <option value="" disabled selected>More Color</option>
+         {% for i in data.variation_set.colors %}
+         <option value="{{ i.variation_value }}">{{ i.variation_value | capfirst }}</option>
+         {% endfor %}
+         </select>
+         </div>
+         </div> 
+         {% endif %}
+         {% if data.variation_set.sizes %}
+         <div class="row">
+         <div class="item-option-select">
+         <h6>Select Size</h6>
+         <select name="size" class="form-control" required>
+         <option value="" disabled selected>More Size</option>
+         {% for i in data.variation_set.sizes %}
+         <option value="{{ i.variation_value }}">{{ i.variation_value | capfirst }}</option>
+         {% endfor %}
+         </select>
+         <hr>
+         {% if data.stock <= 0 %}
+         <h5 class="text-danger">Out of Stock</h5>
+         {% else %}
+         <button type="submit" class="btn btn-warning"> <span class="text">Add to cart</span><i class="fas fa-shopping-cart"></i></button>
+         {% endif %}
+         </div>
+         </div> <!-- row.// -->
+         {% endif %}
+         </article> <!-- product-info-aside .// -->
+         </form>
+         </main> <!-- col.// -->
+      </div>
+      <!-- row.// -->
+   </div>
+   <!-- card.// -->
+   <br>
+   <div class="container m-2">
+      <div class="row">
+         <div class="col-md-9">
 
+			<form action="{% url 'SubmtReview' data.id %}" method="POST" enctype="multipart/form-data">
+				{% csrf_token %}
+				<h5>We Value Your Feedback</h5>
+				<p class="text-muted">Your opinion helps us improve and serve you better.</p>
+				<br>
+				<!-- Rating Section -->
+				<div class="rating-container">
+				   <label for="rating" class="form-label">Please rate your experience with this product</label>
+				   <div class="stars" id="star-container">
+					  <span data-value="1" class="star">&#9733;</span>
+					  <span data-value="2" class="star">&#9733;</span>
+					  <span data-value="3" class="star">&#9733;</span>
+					  <span data-value="4" class="star">&#9733;</span>
+					  <span data-value="5" class="star">&#9733;</span>
+				   </div>
+				   <input type="hidden" name="rating" id="rating-input" required>
+				   <p id="rating-output" class="text-muted">Your Rating: 0</p>
+				</div>
+				<br>
+				<!-- Feedback Section -->
+				<label for="review" class="form-label">Share Your Experience</label>
+				<textarea name="review" id="review" class="form-control" placeholder="Tell us about your experience with the product" rows="3" required></textarea>
+				<br>
+				<!-- Image Upload Section -->
+				<label for="imageUpload" class="form-label">Upload Product Images (Optional)</label>
+				<p class="text-muted">You can upload up to 5 images (JPEG, PNG) with a maximum size of 2MB each.</p>
+				<div class="custom-file">
+				   <input type="file" class="custom-file-input" id="imageUpload" name="images" accept="image/jpeg, image/png" multiple>
+				   <label class="custom-file-label" for="imageUpload">Select Images</label>
+				   <p id="file-count" class="mt-2 text-muted">No files selected.</p>
+				</div>
+				<div id="preview-container" class="mt-3" style="display: flex; flex-wrap: wrap; gap: 10px;"></div>
+				<br>
+            <input type="submit" class="btn btn-primary" value="Submit Review">
+            
 
+				<!-- Submit or Access Control -->
+				{% if user.is_authenticated %}
+				   {% if orderproduct %}
+					  <input type="submit" class="btn btn-primary" value="Submit Review">
+				   {% else %}
+					  <p class="text-danger">You must purchase this product to post a review.</p>
+				   {% endif %}
+				{% else %}
+				   <p class="text-danger">You must log in to post a review. <a href="{% url 'Login' %}" class="text-primary">Login Now</a></p>
+				{% endif %}
+			 </form>
+			 
+			 <!-- JavaScript -->
+			 <script>
+				document.addEventListener('DOMContentLoaded', () => {
+				   const fileInput = document.getElementById('imageUpload');
+				   const previewContainer = document.getElementById('preview-container');
+				   const fileCountDisplay = document.getElementById('file-count');
+				   let filesArray = [];
+			 
+				   fileInput.addEventListener('change', () => {
+					  previewContainer.innerHTML = ''; // Clear previous previews
+					  filesArray = Array.from(fileInput.files); // Store files in an array
+					  
+					  // Update file count display
+					  fileCountDisplay.textContent = filesArray.length > 0 
+						 ? `${filesArray.length} file(s) selected.` 
+						 : 'No files selected.';
+			 
+					  // Validate file count
+					  if (filesArray.length > 5) {
+						 alert('You can upload a maximum of 5 images.');
+						 fileInput.value = ''; // Clear input
+						 fileCountDisplay.textContent = 'No files selected.';
+						 filesArray = [];
+						 return;
+					  }
+			 
+					  filesArray.forEach((file, index) => {
+						 // Validate file size
+						 if (file.size > 2 * 1024 * 1024) {
+							alert(`${file.name} exceeds the 2MB size limit.`);
+							fileInput.value = ''; // Clear input
+							fileCountDisplay.textContent = 'No files selected.';
+							filesArray = [];
+							return;
+						 }
+			 
+						 // Preview image with remove option
+						 const fileReader = new FileReader();
+						 fileReader.onload = (e) => {
+							const previewWrapper = document.createElement('div');
+							previewWrapper.style.position = 'relative';
+							previewWrapper.style.display = 'inline-block';
+			 
+							const img = document.createElement('img');
+							img.src = e.target.result;
+							img.alt = file.name;
+							img.style = 'width: 100px; height: 100px; border: 1px solid #ddd; padding: 5px;';
+							
+							const removeBtn = document.createElement('button');
+removeBtn.textContent = '×';
+removeBtn.style = `
+   position: absolute;
+   top: -5px;
+   right: -5px;
+   background: #ff9017; /* Use specified color */
+   color: white;
+   border: none;
+   border-radius: 50%; /* Ensure circular shape */
+   width: 20px; /* Increase size for better visibility */
+   height: 20px;
+   display: flex;
+   justify-content: center;
+   align-items: center;
+   font-size: 15px; /* Adjust font size for the cross */
+   cursor: pointer;
+   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Add subtle shadow for better visibility */
+`;
 
+							// Remove image from preview and files array
+							removeBtn.addEventListener('click', () => {
+							   filesArray.splice(index, 1); // Remove from files array
+							   previewWrapper.remove(); // Remove preview
+							   fileInput.value = ''; // Clear input to allow re-selection
+							   fileCountDisplay.textContent = filesArray.length > 0 
+								  ? `${filesArray.length} file(s) selected.` 
+								  : 'No files selected.';
+							});
+			 
+							previewWrapper.appendChild(img);
+							previewWrapper.appendChild(removeBtn);
+							previewContainer.appendChild(previewWrapper);
+						 };
+						 fileReader.readAsDataURL(file);
+					  });
+				   });
+				});
+			 </script>
+			 
+			 
+            <!-- Star Rating Script -->
+            <script>
+               document.addEventListener('DOMContentLoaded', () => {
+               	const stars = document.querySelectorAll('.star');
+               	const output = document.getElementById('rating-output');
+               	const ratingInput = document.getElementById('rating-input');
+               	let rating = 0;
+               
+               	stars.forEach((star, index) => {
+               		star.addEventListener('click', () => {
+               			rating = index + 1;
+               			output.textContent = `Your Rating: ${rating}`;
+               			ratingInput.value = rating; // Pass the rating value
+               			updateStars();
+               		});
+               	});
+               
+               	function updateStars() {
+               		stars.forEach((star, i) => {
+               			star.classList.toggle('selected', i < rating);
+               		});
+               	}
+               });
+            </script>
+            <hr>
 
-
-						 <header class="section-heading">
-						 <h3>Customer Reviews </h3>
-						 </header>
-
-						  {% if reviews %}
-
-														{% for r in reviews %}
-																 <div id="comments">
-													<article class="box mb-3">
-														<div class="icontext w-100">
-															{% if r.user.userprofile.img %}
-															<img src="{{r.user.userprofile.img.url}}" class="img-xs icon rounded-circle">
-															{% endif %}
-															<div class="text">
-																<span class="date text-muted float-md-right">{{r.created_at}}</span>
-																<h6 class="mb-1">{{r.user.first_name|capfirst}} {{r.user.last_name|capfirst}}</h6>
-
-
-														 <!-- <i class="fa fa-star-half"  aria-hidden="false"></i> -->
-																 <div class="_3LWZlKD">
-																	 {{r.rating }}
-
-																		 <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMyIgaGVpZ2h0PSIxMiI+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTYuNSA5LjQzOWwtMy42NzQgMi4yMy45NC00LjI2LTMuMjEtMi44ODMgNC4yNTQtLjQwNEw2LjUuMTEybDEuNjkgNC4wMSA0LjI1NC40MDQtMy4yMSAyLjg4Mi45NCA0LjI2eiIvPjwvc3ZnPg==" class="_1wB99o _19cuvx">
-																 </div>
-
-															</div>
-														</div>
-															<div class="mt-3">
-																<p>
-																	{{r.review|capfirst}}
-																</p>
-															</div>        
-<!-- Add these lines to your HTML file -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css" />
-<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js"></script>
-
-													<div class="mt-3">
-														<p>
-															{% if r.img1 %}
-															<a data-fancybox="review-{{ r.id }}" href="{{r.img1.url}}">
-															<img widht="100px" height="100px" src="{{r.img1.url}}" alt="">
-															</a>
-														  {% endif %}
-
-
-													{% if r.img2 %}
-															<a data-fancybox="review-{{ r.id }}" href="{{r.img2.url}}">
-															<img widht="100px" height="100px" src="{{r.img2.url}}" alt="">
-															</a>
-															{% endif %}
-
-															{% if r.img3 %}
-															<a data-fancybox="review-{{ r.id }}" href="{{r.img3.url}}">
-															<img widht="100px" height="100px" src="{{r.img3.url}}" alt="">
-															</a>
-															{% endif %}
-
-															{% if r.img4 %}
-															<a data-fancybox="review-{{ r.id }}" href="{{r.img4.url}}">
-															<img widht="100px" height="100px" src="{{r.img4.url}}" alt="">
-															</a>
-															{% endif %}
-
-															{% if r.img5 %}
-															<a data-fancybox="review-{{ r.id }}" href="{{r.img5.url}}">
-															<img widht="100px" height="100px" src="{{r.img5.url}}" alt="">
-															</a>
-															{% endif %}
-
-														</p>
-													</div>
-													<!-- Your template -->
-													<br>
-						{% if request.user == r.user %}
-													<button type="button" onclick="window.location.href='{% url 'DeleteRev' r.id %}'" class="btn btn-danger btn-sm" name="button">Delete</button>
-													<button type="button" onclick="redirectToUpdate('{% url 'UpdateRev' r.id %}')" class="btn btn-info btn-sm" name="button">Update</button>
-						{% endif %}
-													</article>
-													  {% endfor %}
-														</div>
-													 </div>
-						  {% else %}
-						  <h5>No Rating Yet</h5>
-						  {% endif %}
-
-
-															</div> <!-- col.// -->
-
-</div>
+			
+			<header class="section-heading mb-4">
+				<h3>Customer Reviews</h3>
+				<p class="text-muted">See what our customers have to say about this product.</p>
+			 </header>
+            {% if reviews %}
+            {% for r in reviews %}
+            <div id="comments">
+               <article class="box mb-3">
+                  <div class="icontext w-100">
+                     {% if r.user.userprofile.img %}
+                     <img src="{{r.user.userprofile.img.url}}" class="img-xs icon rounded-circle">
+                     {% endif %}
+                     <div class="text">
+                        <span class="date text-muted float-md-right">{{r.created_at}}</span>
+                        <h6 class="mb-1">{{r.user.first_name|capfirst}} {{r.user.last_name|capfirst}}</h6>
+                        <!-- <i class="fa fa-star-half"  aria-hidden="false"></i> -->
+                        <div class="_3LWZlKD">
+                           {{r.rating }}
+                           <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMyIgaGVpZ2h0PSIxMiI+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTYuNSA5LjQzOWwtMy42NzQgMi4yMy45NC00LjI2LTMuMjEtMi44ODMgNC4yNTQtLjQwNEw2LjUuMTEybDEuNjkgNC4wMSA0LjI1NC40MDQtMy4yMSAyLjg4Mi45NCA0LjI2eiIvPjwvc3ZnPg==" class="_1wB99o _19cuvx">
+                        </div>
+                     </div>
+                  </div>
+                  <div class="mt-3">
+                     <p>
+                        {{r.review|capfirst}}
+                     </p>
+                  </div>
+                  <!-- Add these lines to your HTML file -->
+                  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css" />
+                  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+                  <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js"></script>
+                  <div class="mt-3">
+                     <p>
+                        {% if r.img1 %}
+                        <a data-fancybox="review-{{ r.id }}" href="{{r.img1.url}}">
+                        <img widht="100px" height="100px" src="{{r.img1.url}}" alt="">
+                        </a>
+                        {% endif %}
+                        {% if r.img2 %}
+                        <a data-fancybox="review-{{ r.id }}" href="{{r.img2.url}}">
+                        <img widht="100px" height="100px" src="{{r.img2.url}}" alt="">
+                        </a>
+                        {% endif %}
+                        {% if r.img3 %}
+                        <a data-fancybox="review-{{ r.id }}" href="{{r.img3.url}}">
+                        <img widht="100px" height="100px" src="{{r.img3.url}}" alt="">
+                        </a>
+                        {% endif %}
+                        {% if r.img4 %}
+                        <a data-fancybox="review-{{ r.id }}" href="{{r.img4.url}}">
+                        <img widht="100px" height="100px" src="{{r.img4.url}}" alt="">
+                        </a>
+                        {% endif %}
+                        {% if r.img5 %}
+                        <a data-fancybox="review-{{ r.id }}" href="{{r.img5.url}}">
+                        <img widht="100px" height="100px" src="{{r.img5.url}}" alt="">
+                        </a>
+                        {% endif %}
+                     </p>
+                  </div>
+                  <!-- Your template -->
+                  <br>
+                  {% if request.user == r.user %}
+                  <button type="button" onclick="window.location.href='{% url 'DeleteRev' r.id %}'" class="btn btn-danger btn-sm" name="button">Delete</button>
+                  <button type="button" onclick="window.location.href='{% url 'UpdateRev' r.id %}'" class="btn btn-info btn-sm" name="button">Update</button>
+                  {% endif %}
+               </article>
+               {% endfor %}
+            </div>
+         </div>
+         {% else %}
+         <h5>No Rating Yet</h5>
+         {% endif %}
+      </div>
+      <!-- col.// -->
+   </div>
 </section>
-<!-- ========================= SECTION CONTENT END// ========================= -->
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script>
-	$(document).ready(function(){
-		$('.thumb a').click(function(e){
-			e.preventDefault();
-			$('.mainImage img').attr('src', $(this).attr("href"));
-		})
-	})
-	// Add the following code if you want the name of the file appear on select
-	$(".custom-file-input").on("change", function() {
-	  var fileName = $(this).val().split("\\").pop();
-	  var fileName1 = 'Image File Selected';
-	  $(this).siblings(".custom-file-label").addClass("selected").html(fileName1);
-	});
+   document.addEventListener('DOMContentLoaded', function () {
+    const thumbnails = document.querySelectorAll('.thumb-link img');
+    const mainImage = document.getElementById('mainImage');
 
+    thumbnails.forEach((thumbnail) => {
+        thumbnail.addEventListener('click', function (e) {
+            e.preventDefault();
 
-    document.addEventListener('DOMContentLoaded', function () {
-        // Get the value of the scroll_to query parameter
-        const scrollTarget = new URLSearchParams(window.location.search).get('scroll_to');
+            // Remove "selected" class from all thumbnails
+            thumbnails.forEach((thumb) => thumb.classList.remove('selected'));
 
-        if (scrollTarget) {
-            // Scroll to the target element
-            const targetElement = document.getElementById(scrollTarget);
+            // Add "selected" class to the clicked thumbnail
+            this.classList.add('selected');
 
-            if (targetElement) {
-                targetElement.scrollIntoView({ behavior: 'smooth' });
-
-                // Remove the query parameter after scrolling
-                const newUrl = window.location.pathname + window.location.search.replace(`?scroll_to=${scrollTarget}`, '');
-                history.replaceState({}, document.title, newUrl);
-            }
-        }
+            // Update the main image
+            mainImage.src = this.parentElement.href;
+         });
     });
-
-		function redirectToUpdate(updateUrl) {
-				// Get the current URL
-				var currentUrl = window.location.href;
-
-				// Append the current URL as a query parameter to the updateUrl
-				var fullUpdateUrl = updateUrl + '?next=' + encodeURIComponent(currentUrl);
-
-				// Redirect to the updateUrl with the current URL as a query parameter
-				window.location.href = fullUpdateUrl;
-		}
-
-
-		document.addEventListener('DOMContentLoaded', function () {
-		// Get the value of the scroll_to query parameter
-		const scrollTarget = new URLSearchParams(window.location.search).get('scroll_to');
-
-		if (scrollTarget) {
-				// Scroll to the target element
-				const targetElement = document.getElementById(scrollTarget);
-
-				if (targetElement) {
-						targetElement.scrollIntoView({ behavior: 'smooth' });
-				}
-		}
 });
-
-$(document).ready(function () {
-		$("[data-fancybox]").fancybox({
-				// You can customize Fancybox options here
-		});
-});
-
 </script>
 {% endblock %}

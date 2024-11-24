@@ -115,12 +115,15 @@ font-size: 12px;
 vertical-align: middle;
 background-color: #ff9017;
 }
+
+
 .brandj {
   color: #878787;
   font-size: 16px;
   display: block;
-  font-weight: 500;
+  font-weight: 600;
 }
+
 
 .custom-file {
     margin-bottom: 10px; /* Add some bottom margin for spacing */

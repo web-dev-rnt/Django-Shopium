@@ -416,46 +416,6 @@ def order(request,total=0, quantity=0):
     else:
         return redirect('Checkout')
 
-# def register(request):
-#     if request.method == 'POST':
-#         form = Registration(request.POST,request.FILES)
-#         if form.is_valid():
-#             fn = form.cleaned_data['first_name']
-#             ls = form.cleaned_data['last_name']
-#             e = form.cleaned_data['email']
-#             c = form.cleaned_data['phone_number']
-#             p = form.cleaned_data['password']
-#             i = request.FILES.get('img')
-#             username = e.split("@")[0]
-#             user = Account.objects.create_user(first_name=fn,last_name=ls,email=e,password=p,username=username)
-#             userpic = UserProfile(user=user,img=i)
-#             userpic.save()
-#             user.phone_number=c
-#             user.save()
-
-#             #User Activation
-#             current_site = get_current_site(request)
-#             mail_subject = 'Please activate your account'
-#             message = render_to_string('myapp/accountver.html',{
-#                 'user':user,
-#                 'domain':current_site,
-#                 'uid':urlsafe_base64_encode(force_bytes(user.pk)),
-#                 'token':default_token_generator.make_token(user),
-#             })
-#             to_email = e
-#             send_email = EmailMultiAlternatives(mail_subject,message,to=[to_email])
-#             send_email.attach_alternative(message, "text/html")
-#             send_email.send()
-#             # messages.success(request,'Your account is created.')
-#             return redirect('/accounts/login/?command=verification&email='+e)
-#     else:
-#         form = Registration()
-#     context ={'form':form}
-#     return render(request,'myapp/register.html',context)
-
-
-
-
 
 
 def login_form(request):
@@ -829,23 +789,6 @@ def search(request):
 
 
 
-# def activate(request,uidb64,token):
-#     try:
-#         uid = urlsafe_base64_decode(uidb64).decode()
-#         user = Account._default_manager.get(pk=uid)
-#     except(TypeError,ValueError,OverflowError,Account.DoesNotExist):
-#         user = None
-
-#     if user is not None and default_token_generator.check_token(user,token):
-#         user.is_active = True
-#         user.save()
-#         messages.success(request,'Congratulations! Your account is activated.')
-#         return redirect('Login')
-#     else:
-#         messages.error(request,'Invalid activation link')
-#         return redirect('Register')
-
-
 
 
 @login_required(login_url='Login')
@@ -862,70 +805,6 @@ def dashboard(request):
     }
     return render(request,'myapp/dashboard.html',context)
 
-
-
-# def forgotpassword(request):
-#     if request.method == 'POST':
-#         email = request.POST['email']
-#         if Account.objects.filter(email=email).exists():
-#             user = Account.objects.get(email__exact=email)
-
-#             #User Forgot Activation
-#             current_site = get_current_site(request)
-#             mail_subject = 'Reset your password'
-#             message = render_to_string('myapp/resetver.html',{
-#                 'user':user,
-#                 'domain':current_site,
-#                 'uid':urlsafe_base64_encode(force_bytes(user.pk)),
-#                 'token':default_token_generator.make_token(user),
-#             })
-#             to_email = email
-#             send_email = EmailMultiAlternatives(mail_subject,message,to=[to_email])
-#             send_email.attach_alternative(message, "text/html")
-#             send_email.send()
-
-#             messages.success(request,'Password reset email has been sent to your email address')
-#             return redirect('Login')
-#         else:
-#             messages.error(request,'Account Does not exist!')
-#             return redirect('ForgotPassword')
-#     return render(request,'myapp/forgotpassword.html')
-
-
-# def resetpassword(request,uidb64,token):
-#     try:
-#         uid = urlsafe_base64_decode(uidb64).decode()
-#         user = Account._default_manager.get(pk=uid)
-#     except(TypeError,ValueError,OverflowError,Account.DoesNotExist):
-#         user = None
-
-#     if user is not None and default_token_generator.check_token(user,token):
-#         request.session['uid'] = uid
-#         messages.success(request,'Please reset your password')
-#         return redirect('PasswordReset')
-#     else:
-#         messages.error(request,'This link has been expired!')
-#         return redirect('Login')
-
-
-# def passwordReset(request):
-#     if request.method == 'POST':
-#         password = request.POST['password']
-#         password1 = request.POST['password1']
-
-#         if password == password1:
-#             uid = request.session.get('uid')
-#             user = Account.objects.get(pk=uid)
-#             user.set_password(password)
-#             user.save()
-#             messages.success(request,'Password reset successful')
-#             return redirect('Login')
-
-#         else:
-#             messages.error(request,'Password do not match!')
-#             return redirect('PasswordReset')
-#     else:
-#         return render(request,'myapp/passwordreset.html')
 
 @login_required(login_url='Login')
 def checkout(request, total=0, quantity=0, cart_items=None):
@@ -981,9 +860,6 @@ def my_order(request):
 
 
 
-
-
-
 def editprofile(request):
     # Get or create the user profile for the logged-in user
     userprofile, created = UserProfile.objects.get_or_create(user=request.user)
@@ -1033,32 +909,6 @@ def editprofile(request):
     return render(request, 'myapp/editprofile.html', context)
 
     
-# def changepass(request):
-#     if request.method == 'POST':
-#         curpass = request.POST['currpass']
-#         newpass = request.POST['newpass']
-#         newpass2 = request.POST['newpass2']
-
-#         user = Account.objects.get(username__exact=request.user.username)
-
-#         if newpass == newpass2:
-#             success = user.check_password(curpass)
-#             if success:
-#                 user.set_password(newpass)
-#                 user.save()
-#                 auth.logout(request)
-#                 messages.success(request,'Password updated successfully')
-#                 return redirect('Login')
-#             else:
-#                 messages.error(request,'Please enter a valid current password')
-#                 return redirect('ChangePass')
-#         else:
-#             messages.error(request,'Password does not match!')
-#             return redirect('ChangePass')
-#     return render(request,'myapp/changepass.html')
-
-
-
 
 def orderdetails(request,order_id):
     order_detail = OrderProduct.objects.filter(order__order_number=order_id)
@@ -1129,23 +979,6 @@ def email_login_or_signup(request):
         return redirect('verify_otp')  # Redirect to OTP verification page if OTP already sent
 
 
-# def ask_for_password(request):
-#     if request.method == 'POST':
-#         password_form = PasswordForm(request.POST)
-#         if password_form.is_valid():
-#             password = password_form.cleaned_data['password']
-#             email = request.session['email']
-#             user = authenticate(request, username=email, password=password)
-#             if user is not None:
-#                 login(request, user)
-#                 return redirect('Home')  # Redirect to home page after login
-#             else:
-#                 # Add an error message for invalid password
-#                 password_form.add_error(None, "Invalid password. Please try again.")
-#     else:
-#         password_form = PasswordForm()
-    
-#     return render(request, 'myapp/password_prompt.html', {'form': password_form})
 
 def verify_otp(request):
     if request.method == 'POST':
