@@ -482,10 +482,32 @@ removeBtn.style = `
                   </div>
                   <!-- Your template -->
                   <br>
+
                   {% if request.user == r.user %}
-                  <button type="button" onclick="window.location.href='{% url 'DeleteRev' r.id %}'" class="btn btn-danger btn-sm" name="button">Delete</button>
-                  <button type="button" onclick="window.location.href='{% url 'UpdateRev' r.id %}'" class="btn btn-info btn-sm" name="button">Update</button>
+                  <button type="button" 
+                  onclick="confirmDelete('{% url 'DeleteRev' r.id %}')"
+                  class="btn btn-danger btn-sm" 
+                  name="button">
+            Delete
+          </button>
+          
+          <button type="button" 
+                  onclick="window.location.href='{% url 'UpdateRev' r.id %}'"
+                  class="btn btn-info btn-sm" 
+                  name="button">
+            Update
+          </button>
+          
+          <script>
+            function confirmDelete(url) {
+              if (confirm("Are you sure you want to delete this item?")) {
+                window.location.href = url;
+              }
+            }
+          </script>
+          
                   {% endif %}
+                  
                </article>
                {% endfor %}
             </div>
