@@ -1,16 +1,17 @@
 {% load static %}
-{% load static %}
 <header>
     <section class="header-main border-bottom">
         <div class="container">
             <div class="row align-items-center">
+                <!-- Brand Logo -->
                 <div class="col-lg-2 col-md-3 col-6">
                     <a href="{% url 'Home' %}" class="brand-wrap">
                         <img class="shopiumlogo" src="{% static 'myapp/images/Untitled.png' %}" alt="Brand Logo">
                     </a>
                 </div>
 
-                <div class="col-lg-2 col-md-3 col-6 hide-on-mobile">
+                <!-- All Categories Button (Hidden on tablet and mobile) -->
+                <div class="col-lg-2 col-md-3 col-6 category-section">
                     <div class="dropdown">
                         <button type="button" class="btn btn-warning dropdown-toggle" data-toggle="dropdown">
                             <i class="fa fa-bars"></i> All Categories
@@ -24,6 +25,7 @@
                     </div>
                 </div>
 
+                <!-- Search Bar -->
                 <div class="col-lg-6 col-md-6 col-12">
                     <form action="{% url 'Search' %}" class="search w-100" method="GET">
                         <div class="input-group float-end">
@@ -37,27 +39,27 @@
                     </form>
                 </div>
 
-                <div class="col-lg-2 col-md-6 col-12 hide-on-mobile">
+                <!-- Profile Details and Cart Button (Hidden on tablet and mobile) -->
+                <div class="col-lg-2 col-md-6 col-12 profile-cart-section">
                     <div class="d-flex justify-content-end">
                         <div id="guestname" class="widget-header">
                             {% if request.user.id is not None %}
-                            {% if user.first_name %}
-                                <small class="title text-muted">Welcome {{ user.first_name }}!</small>
+                                {% if user.first_name %}
+                                    <small class="title text-muted">Welcome {{ user.first_name }}!</small>
+                                {% else %}
+                                    <small class="title text-muted">Welcome there!</small>
+                                {% endif %}
+                                <div>
+                                    <a class="asdkgask" href="{% url 'Dashboard' %}">Profile</a>
+                                    <span class="dark-transp"> | </span>
+                                    <a class="asdkgask" href="{% url 'Logout' %}">Logout</a>
+                                </div>
                             {% else %}
-                                <small class="title text-muted">Welcome there!</small>
+                                <small class="title text-muted">Welcome guest!</small>
+                                <div>
+                                    <a class="asdkgask" href="{% url 'Login' %}">Start shopping!</a>
+                                </div>
                             {% endif %}
-                            <div>
-                                <a class="asdkgask" href="{% url 'Dashboard' %}">Profile</a>
-                                <span class="dark-transp"> | </span>
-                                <a class="asdkgask" href="{% url 'Logout' %}">Logout</a>
-                            </div>
-                        {% else %}
-                            <small class="title text-muted">Welcome guest!</small>
-                            <div>
-                                <a class="asdkgask" href="{% url 'Login' %}">Start shopping!</a>
-                            </div>
-                        {% endif %}
-                        
                         </div>
                         <a href="{% url 'Cart' %}" class="d-flex align-items-center">
                             <div class="icon icon-sm rounded-circle border">
@@ -67,11 +69,43 @@
                         </a>
                     </div>
                 </div>
+
+                <!-- Shortcut Slider Button (Visible only on tablet and mobile) -->
+                <div class="col-12 d-lg-none">
+                    <button id="shortcut-slider-btn" class="btn btn-warning w-100 mt-3">
+                        <i class="fa fa-bars"></i> Quick Links
+                    </button>
+                </div>
             </div>
         </div>
+
+    <!-- Sliding Quick Links Menu -->
+    <div id="shortcut-slider" class="shortcut-slider">
+        <!-- Cross Button to Close the Slider -->
+        <button id="close-slider-btn" class="slider-close-btn">&times;</button>
+
+        <!-- Profile Section with Rounded Profile Pic -->
+        <div class="slider-profile-section">
+            <img src="path_to_profile_picture.jpg" alt="Profile Picture" class="slider-profile-pic">
+            <div class="slider-profile-details">
+                <p><strong>John Doe</strong></p>
+                <p>Email: johndoe@example.com</p>
+            </div>
+        </div>
+
+        <!-- Menu Links -->
+        <ul>
+            <li><a href="{% url 'Home' %}">Home</a></li>
+            <li><a href="{% url 'Store' %}">All Products</a></li>
+            <li><a href="{% url 'Dashboard' %}">Profile</a></li>
+            <li><a href="{% url 'Cart' %}">Cart</a></li>
+            <li><a href="{% url 'Login' %}">Login</a></li>
+        </ul>
+    </div>
     </section>
 </header>
 
+<!-- Styles -->
 <style>
     .icon-sm {
         width: 48px;
@@ -89,12 +123,6 @@
 
     a:hover {
         color: orange;
-    }
-
-    @media (max-width: 768px) {
-        .hide-on-mobile {
-            display: none !important;
-        }
     }
 
     .shopiumlogo {
@@ -132,11 +160,138 @@
         box-shadow: 0 0 0 0.2rem rgba(255, 144, 23, 0.5);
     }
 
+    .shortcut-slider {
+        position: fixed;
+        top: 0;
+        right: -100%;
+        width: 250px;
+        height: 100%;
+        background: #ff9017;
+        color: white;
+        overflow-y: auto;
+        transition: all 0.3s;
+        z-index: 1000;
+        padding: 20px;
+    }
+
+    .shortcut-slider ul {
+        list-style: none;
+        padding: 0;
+    }
+
+    .shortcut-slider ul li {
+        margin: 15px 0;
+    }
+
+    .shortcut-slider ul li a {
+        color: white;
+        text-decoration: none;
+        font-size: 18px;
+    }
+
+    .shortcut-slider ul li a:hover {
+        text-decoration: underline;
+    }
+
+    @media (max-width: 992px) {
+        .category-section,
+        .profile-cart-section {
+            display: none !important;
+        }
+    }
+
     @media only screen and (max-width: 768px) {
         .shopiumlogo {
             width: 300px;
             margin-bottom: 10px;
         }
     }
+            /* Close button style for the slider */
+            .slider-close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 30px;
+            cursor: pointer;
+        }
+
+        .slider-close-btn:hover {
+            color: #ff9017;
+        }
+
+        /* Profile section styling specific to the slider */
+        .slider-profile-section {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .slider-profile-pic {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        .slider-profile-details p {
+            margin: 0;
+            color: white;
+            font-size: 15px;
+        }
+
+        /* Styling for the sliding menu */
+        .shortcut-slider {
+            position: fixed;
+            top: 0;
+            right: -100%;
+            width: 250px;
+            height: 100%;
+            background: #ff9017;
+            color: white;
+            overflow-y: auto;
+            transition: all 0.3s;
+            z-index: 1000;
+            padding: 20px;
+        }
+
+        .shortcut-slider ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .shortcut-slider ul li {
+            margin: 15px 0;
+        }
+
+        .shortcut-slider ul li a {
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+        }
+
+        .shortcut-slider ul li a:hover {
+            text-decoration: underline;
+        }
 </style>
 
+<!-- JavaScript -->
+<script>
+      // Show/Hide the slider when the button is clicked
+      document.getElementById('shortcut-slider-btn').addEventListener('click', function () {
+            const slider = document.getElementById('shortcut-slider');
+            if (slider.style.right === '0px') {
+                slider.style.right = '-100%';
+            } else {
+                slider.style.right = '0';
+            }
+        });
+
+        // Close the slider when the cross button is clicked
+        document.getElementById('close-slider-btn').addEventListener('click', function () {
+            const slider = document.getElementById('shortcut-slider');
+            slider.style.right = '-100%';
+        });
+</script>

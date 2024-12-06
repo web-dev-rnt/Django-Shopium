@@ -2,60 +2,118 @@
 {% load static %}
 {% block content %}
 
-<section class="section-content padding-y" style="min-height:84vh">
+<div class="main-content-wrapper" style="background-color: #f5f5f5; min-height: 80vh; padding-top: 20px; padding-bottom: 20px;">
+  <section class="section-content padding-y">
+    <div class="card mx-auto" style="max-width: 400px;">
+      <img 
+        class="card-img-top" 
+        src="{% static 'myapp/images/pexels-markus-winkler-1430818-13516674.jpg' %}" 
+        alt="Login Image" 
+        style="width: 100%; height: auto; border-radius: 8px 8px 0 0;">
 
-  <div class="card mx-auto" style="max-width: 400px; margin-top:10px;">
-    <img class="card-img-top" src="{% static 'myapp/images/pexels-markus-winkler-1430818-13516674.jpg' %}" alt="Login Image" style="width: 100%; height: auto;">
+        {% include 'myapp/includes/message.html' %}
 
-    {% if messages %}
-    <div id="messages">
-      {% for message in messages %}
-      <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show" role="alert" id="message">
-        <div class="alert-content">
-          {{ message }}
+      <div class="card-body" style="background-color: #fff; padding: 1.5rem; border-radius: 0 0 8px 8px;">
+        <div class="text-center mb-3">
+          <span><strong style="font-size:22px;">Login</strong> or <strong style="font-size:22px;">Signup</strong></span>
         </div>
-      </div>
-      {% endfor %}
-    </div>
-    {% endif %}
 
-    <div class="card-body" style="background-color: #fff; padding: 2rem;">
-      <div class="mb-2 text-center">
-        <span><strong style="font-size:22px;">Login</strong> or <strong style="font-size:22px;">Signup</strong></span>
-      </div>
+        <form method="post" novalidate>
+          {% csrf_token %}
+          
+          <div class="mb-3">
+            <label for="{{ form.email.id_for_label }}" class="form-label">{{ form.email.label }}</label>
+            {{ form.email }}
+            <ul class="errors">
+              {% for error in form.email.errors %}
+              <li>{{ error }}</li>
+              {% endfor %}
+            </ul>
+            <small class="form-text">{{ form.email.help_text }}</small>
+          </div>
 
-      <form method="post" novalidate>
-        {% csrf_token %}
-        
-        <div class="mb-3">
-          <label for="{{ form.email.id_for_label }}" class="form-label">{{ form.email.label }}</label>
-          {{ form.email }}
-          <ul class="errors">
-            {% for error in form.email.errors %}
-            <li>{{ error }}</li>
-            {% endfor %}
-          </ul>
-          <small>{{ form.email.help_text }}</small>
-        </div>
+          <div class="mt-3 text-center">
+            <small>By continuing, I agree to the <a href="#" data-bs-toggle="modal" data-bs-target="#termsModal" style="color:#ff9017;"><strong>Terms of Use</strong></a> & <a href="#" data-bs-toggle="modal" data-bs-target="#privacyPolicyModal" style="color:#ff9017;"><strong>Privacy Policy</strong></a></small>
+          </div>
+
+          <div class="mt-3">
+            <button type="submit" class="btn btn-primary w-100" style="background:#ff9017; border:#ff9017;">Continue</button>
+          </div>
+        </form>
 
         <div class="mt-3 text-center">
-          <small class="mt-2">By continuing, I agree to the <strong style="color:#ff9017;">Terms of Use</strong> & <strong style="color:#ff9017;">Privacy Policy</strong></small>
+          <small>Having trouble logging in? <a href="#" data-bs-toggle="modal" data-bs-target="#getHelpModal"><strong style="color:#ff9017;">Get help</strong></a></small>
         </div>
-
-        <div class="mt-3">
-          <button type="submit" class="btn btn-primary w-100" style="background:#ff9017; border:#ff9017;">Continue</button>
-        </div>
-      </form>
-
-      <div class="mt-3 text-center">
-        <small class="mt-2">Having trouble logging in? <strong style="color:#ff9017;">Get help</strong></small>
       </div>
+    </div>
+  </section>
 
-    </div> <!-- card-body.// -->
-  </div> <!-- card .// -->
-</section>
+  <!-- Terms Modal -->
+  <div class="modal fade" id="termsModal" tabindex="-1" aria-labelledby="termsModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="termsModalLabel">Terms of Use</h5>
+
+        </div>
+        <div class="modal-body">
+          <p>These are the Terms of Use for accessing and using the website. By using this website, you agree to comply with the following terms. <strong>Contact the developer:</strong></p>
+          <p><strong>Email:</strong> <a href="mailto:webdevrnt@gmail.com">webdevrnt@gmail.com</a></p>
+          <p><strong>Phone:</strong> +91 7905817391</p>
+          <p>If you violate any of these terms, you may be subject to account suspension and legal actions.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Privacy Policy Modal -->
+  <div class="modal fade" id="privacyPolicyModal" tabindex="-1" aria-labelledby="privacyPolicyModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="privacyPolicyModalLabel">Privacy Policy</h5>
+      
+        </div>
+        <div class="modal-body">
+          <p>This is the privacy policy that governs how your personal data is collected and used. We ensure your privacy is respected and your data is protected. We do not share your information with third parties without your consent.</p>
+          <p><strong>If you need help with resetting your email or have any questions:</strong></p>
+          <p>Contact the developer: <a href="mailto:webdevrnt@gmail.com">webdevrnt@gmail.com</a></p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Get Help Modal -->
+  <div class="modal fade" id="getHelpModal" tabindex="-1" aria-labelledby="getHelpModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="getHelpModalLabel">Get Help</h5>
+        
+        </div>
+        <div class="modal-body">
+          <p>If you are facing difficulties logging in, you can reset your email or account by contacting the developer.</p>
+          <p><strong>Contact Email:</strong> <a href="mailto:webdevrnt@gmail.com">webdevrnt@gmail.com</a></p>
+          <p><strong>Phone Number:</strong> +91 7905817391</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
 <style>
+  /* Modal Styling */
+  .modal-content {
+    border-radius: 8px;
+  }
   .errors {
     color: red;
     list-style-type: none;
@@ -63,54 +121,22 @@
     margin: 0;
     font-size: 10px;
   }
-
-  .alert {
-    font-size: 14px;
-    text-align: center; /* Center the text inside the alert */
-    opacity: 1;
-    transition: opacity 1s ease-out; /* Add fade-out transition */
-  }
-
-  .alert-content {
-    padding: 10px;
-  }
-
-  /* Responsive adjustments */
-  @media (max-width: 768px) {
-    .card {
-      max-width: 90%; /* Allows the card to be a bit smaller on mobile */
-    }
-    .card-body {
-      padding: 1rem;
-    }
-    img.card-img-top {
-      width: 100%;
-      height: auto;
-    }
-  }
-
-  /* Ensure the form inside the card has a white background */
-  .card-body {
-    background-color: #fff;
-    padding: 2rem;
-    border-radius: 8px; /* Optional: rounded corners for the form */
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Optional: subtle shadow */
-  }
-
-  /* Style for error messages */
+  
   .errors li {
     font-size: 12px;
-  }
+  } 
 </style>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
 <script>
-  // JavaScript to make the message fade after 5 seconds
+  // Automatically hide alerts after 5 seconds and add fade-out effect
   window.addEventListener('load', function () {
     const messages = document.querySelectorAll('.alert');
     messages.forEach(function (message) {
       setTimeout(function () {
-        message.style.opacity = 0; // Fade out the message
-      }, 5000); // After 5 seconds
+        message.classList.add('fade-out');
+      }, 5000); // Delay in milliseconds
     });
   });
 </script>

@@ -7,16 +7,7 @@
   <div class="card mx-auto" style="max-width: 400px; margin-top:10px;">
     <img class="card-img-top" src="{% static 'myapp/images/pexels-markus-winkler-1430818-13516674.jpg' %}" alt="Image" style="width: 100%; height: auto;">
 
-    {% if messages %}
-    <div id="messages">
-      {% for message in messages %}
-      <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show" role="alert">
-        {{ message }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-      </div>
-      {% endfor %}
-    </div>
-    {% endif %}
+    {% include 'myapp/includes/message.html' %}
 
     <div class="card-body" style="background-color: #fff; padding: 2rem; border-radius: 8px;">
       <div class="mb-2 text-center">
@@ -57,17 +48,6 @@
 </section>
 
 <style>
-  .errors {
-    color: red;
-    list-style-type: none;
-    padding: 0;
-    margin: 0;
-    font-size: 10px;
-  }
-
-  .alert {
-    font-size: 14px;
-  }
 
   /* Responsive adjustments */
   @media (max-width: 768px) {
@@ -81,11 +61,6 @@
       width: 100%;
       height: auto;
     }
-  }
-
-  /* Style for error messages */
-  .errors li {
-    font-size: 12px;
   }
 
   /* Ensure the form inside the card has a white background */
@@ -110,6 +85,17 @@
     background-color: #ff9017;
     border: 1px solid #ff9017;
   }
+  .errors {
+    color: red;
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    font-size: 10px;
+  }
+  
+  .errors li {
+    font-size: 12px;
+  } 
 
 </style>
 

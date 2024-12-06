@@ -45,12 +45,22 @@ $(document).ready(function() {
 <style>
     /* Example media query for smaller screens */
 @media only screen and (max-width: 600px) {
-    /* Your styles for smaller screens go here */
-
+    .popup-content {
+        width: 90%; /* Full width for smaller screens */
+    }
+    .btn {
+        width: 100%; /* Button takes full width */
+    }
+}
+@media only screen and (min-width: 600px) and (max-width: 1200px) {
+    .popup-content {
+        width: 80%; /* Slightly smaller width for tablets */
+    }
 }
 </style>
 </head>
 <body>
+    <!-- Developer Details Popup -->
     <div id="popup" class="popup">
         <div class="popup-content">
             <img src="{% static 'myapp/images/profilepic.jpeg' %}" alt="Profile Picture"> <!-- Your image here -->
@@ -58,6 +68,18 @@ $(document).ready(function() {
             <p>Greetings! I’m<strong> Rudra Narayan Tiwari</strong>,a web developer with a year of experience.I’m excited to collaborate & create amazing projects together!<br> For any queries, feel free to reach out.<br><br>Email: <a href="mailto:webdevrnt@gmail.com">webdevrnt@gmail.com</a> Whatsapp: +91 7905817391 <br>Linkedin:<a href="https://www.linkedin.com/in/rrnntt" target="_blank">Rudra Narayan Tiwari</a><br><br> Looking forward to working with all of you!</p>
         </div>
     </div>
+
+    <!-- Signup Alert Popup -->
+    <div id="signup-popup" class="popup">
+        <div class="popup-content">
+            <h2>Sign Up Now!</h2>
+            <p>It looks like you're new here! Create an account to get started with exclusive features.</p>
+            <p><strong>Sign up with your email</strong></p> <!-- Professional sign-up message -->
+            <a href="/signup" class="btn btn-signup">Sign Up</a> <!-- Adjust the URL to your sign-up page -->
+            <span class="close" onclick="closeSignupPopup()">&times;</span>
+        </div>
+    </div>
+
     <style>
         .popup {
             display: none; /* Hidden by default */
@@ -77,7 +99,8 @@ $(document).ready(function() {
             border-radius: 8px;
             padding: 20px;
             text-align: center;
-            width: 300px; /* You can adjust this */
+            width: 300px; /* Default width */
+            position: relative; /* Relative position for the close button */
         }
 
         .popup-content img {
@@ -89,10 +112,12 @@ $(document).ready(function() {
 
         .close {
             color: #aaa;
-            float: right;
             font-size: 28px;
             font-weight: bold;
             cursor: pointer;
+            position: absolute;
+            top: 10px;
+            right: 10px;
         }
 
         .close:hover,
@@ -100,6 +125,23 @@ $(document).ready(function() {
             color: black;
             text-decoration: none;
             cursor: pointer;
+        }
+
+        /* Style for the Sign Up Button */
+        .btn-signup {
+            background-color: #ff9017;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 5px;
+            display: inline-block;
+            margin-top: 15px;
+            font-size: 16px;
+        }
+
+        .btn-signup:hover {
+            background-color: #e57e13;
         }
     </style>
 
@@ -111,21 +153,32 @@ $(document).ready(function() {
 
   <!--Footer-->
   {% include 'myapp/includes/footer.html' %}
+
   <script>
     window.onload = function() {
-        // Check if the popup has already been shown
+        // Check if the developer popup has already been shown
         if (!localStorage.getItem('popupShown')) {
-            document.getElementById('popup').style.display = 'flex'; // Show the popup
+            document.getElementById('popup').style.display = 'flex'; // Show the developer popup
             localStorage.setItem('popupShown', 'true'); // Set a flag in localStorage
-    
         }
+
+        // Show the sign-up popup after 10 seconds
+        setTimeout(function() {
+            if (!localStorage.getItem('signupPopupShown')) {
+                document.getElementById('signup-popup').style.display = 'flex'; // Show the sign-up popup
+                localStorage.setItem('signupPopupShown', 'true'); // Set a flag in localStorage
+            }
+        }, 10000); // 10 seconds delay
     };
 
     function closePopup() {
-        document.getElementById('popup').style.display = 'none'; // Hide the popup
+        document.getElementById('popup').style.display = 'none'; // Hide the developer popup
+    }
+
+    function closeSignupPopup() {
+        document.getElementById('signup-popup').style.display = 'none'; // Hide the sign-up popup
     }
 </script>
-
 
 </body>
 </html>

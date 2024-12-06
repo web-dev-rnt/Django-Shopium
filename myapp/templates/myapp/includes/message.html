@@ -1,9 +1,48 @@
 {% if messages %}
-{% for m in messages  %}
-<div class="container" id="message">
-<div {% if m.tags %} class="alert alert-{{ m.tags }}"{% endif %}>
-    {{m}}
-    </div>
-</div>
-{% endfor %}
+    {% for m in messages %}
+        <div class="container" id="message">
+            <div 
+                {% if m.tags %} 
+                    class="alert alert-{{ m.tags }}" 
+                {% endif %} 
+                role="alert"
+            >
+                {{ m }}
+            </div>
+        </div>
+    {% endfor %}
 {% endif %}
+
+<!-- Add this style block to define the fade-out effect -->
+<style>
+  /* Fade-out effect */
+  .fade-out {
+    opacity: 0;
+    transition: opacity 1s ease-out;
+    height: 0;
+    padding: 0;
+    margin: 0;
+    overflow: hidden;
+  }
+
+  .container {
+  padding-top: 10px;
+}
+
+
+</style>
+
+<!-- Add this script to automatically apply the fade-out effect after 5 seconds -->
+<script>
+  window.addEventListener('load', function () {
+    // Select all message alerts
+    const messages = document.querySelectorAll('.alert');
+    
+    messages.forEach(function (message) {
+      // Set a timeout to apply the fade-out effect after 5 seconds
+      setTimeout(function () {
+        message.classList.add('fade-out');
+      }, 5000); // 5000 milliseconds = 5 seconds
+    });
+  });
+</script>
