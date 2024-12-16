@@ -2,72 +2,148 @@
 {% load static %}
 
 {% block content %}
-
 <section class="section-content padding-y bg">
   <div class="container">
-
-    <!-- ============================ COMPONENT 1 ================================= -->
-
     <div class="row">
+      <!-- Left Section: Billing Address -->
       <aside class="col-lg-6">
         <div class="card">
           <div class="card-body">
             <h4 class="card-title mb-4">Billing Address</h4>
-
             <form action="{% url 'Order' %}" method="POST">
               {% csrf_token %}
               <div class="form-row">
                 <div class="col form-group">
-                  <label for="">First Name</label>
-                  <input type="text" name="first_name" class="form-control" value="{{ account.first_name }}" required>
+                  <label for="first_name">First Name</label>
+                  <input 
+                    type="text" 
+                    name="first_name" 
+                    class="form-control" 
+                    value="{{ account.first_name|default:'' }}" 
+                    minlength="5" 
+                    required>
                 </div>
                 <div class="col form-group">
-                  <label for="">Last Name</label>
-                  <input type="text" name="last_name" class="form-control" value="{{ account.last_name }}" required>
+                  <label for="last_name">Last Name</label>
+                  <input 
+                    type="text" 
+                    name="last_name" 
+                    class="form-control" 
+                    value="{{ account.last_name|default:'' }}" 
+                    minlength="5" 
+                    required>
                 </div>
               </div>
+
               <div class="form-row">
                 <div class="col form-group">
-                  <label for="">Email</label>
-                  <input type="email" name="email" class="form-control" value="{{ account.email }}" required>
+                  <label for="email">Email</label>
+                  <input 
+                    type="email" 
+                    name="email" 
+                    class="form-control" 
+                    value="{{ account.email|default:'' }}" 
+                    required>
                 </div>
                 <div class="col form-group">
                   <label for="phone">Phone Number</label>
-                  <input type="text" name="phone" id="phone" class="form-control" value="{{ account.phone_number }}" required>
+                  <input 
+                    type="text" 
+                    name="phone" 
+                    id="phone" 
+                    class="form-control" 
+                    value="{{ account.phone_number|default:'' }}" 
+                    placeholder="+91XXXXXXXXXX" 
+                    pattern="^\+91\d{10}$" 
+                    title="Phone number must be in the format +91XXXXXXXXXX" 
+                    required>
                 </div>
               </div>
+
               <div class="form-row">
                 <div class="col form-group">
-                  <label for="">Address Line 1</label>
-                  <input type="text" name="address_line_1" class="form-control" value="{{ user_profile.address_line_1 }}" required>
+                  <label for="address_line_1">Address Line 1</label>
+                  <input 
+                    type="text" 
+                    name="address_line_1" 
+                    class="form-control" 
+                    minlength="20" 
+                    value="{{ user_profile.address_line_1|default:'' }}" 
+                    required>
                 </div>
                 <div class="col form-group">
-                  <label for="">Address Line 2</label>
-                  <input type="text" name="address_line_2" class="form-control" value="{{ user_profile.address_line_2 }}">
+                  <label for="address_line_2">Address Line 2</label>
+                  <input 
+                    type="text" 
+                    name="address_line_2" 
+                    class="form-control" 
+                    minlength="20" 
+                    value="{{ user_profile.address_line_2|default:'' }}" 
+                    required>
                 </div>
               </div>
+
               <div class="form-row">
                 <div class="col form-group">
-                  <label for="">City</label>
-                  <input type="text" name="city" class="form-control" value="{{ user_profile.city }}" required>
+                  <label for="city">City</label>
+                  <input 
+                    list="city-list" 
+                    name="city" 
+                    class="form-control" 
+                    value="{{ user_profile.city|default:'' }}" 
+                    required>
+                  <datalist id="city-list">
+                    <option value="Lucknow">
+                    <option value="Delhi">
+                    <option value="Mumbai">
+                    <option value="Kolkata">
+                    <option value="Bengaluru">
+                  </datalist>
                 </div>
                 <div class="col form-group">
-                  <label for="">State</label>
-                  <input type="text" name="state" class="form-control" value="{{ user_profile.state }}" required>
+                  <label for="state">State</label>
+                  <input 
+                    list="state-list" 
+                    name="state" 
+                    class="form-control" 
+                    value="{{ user_profile.state|default:'' }}" 
+                    required>
+                  <datalist id="state-list">
+                    <option value="Uttar Pradesh">
+                    <option value="Delhi">
+                    <option value="Maharashtra">
+                    <option value="West Bengal">
+                    <option value="Karnataka">
+                  </datalist>
                 </div>
                 <div class="col form-group">
-                  <label for="">Country</label>
-                  <input type="text" name="country" class="form-control" value="{{ user_profile.country }}" required>
+                  <label for="country">Country</label>
+                  <input 
+                    list="country-list" 
+                    name="country" 
+                    class="form-control" 
+                    value="{{ user_profile.country|default:'' }}" 
+                    required>
+                  <datalist id="country-list">
+                    <option value="India">
+                  </datalist>
                 </div>
               </div>
+
               <div class="form-row">
-                <label for="">Order Note</label>
-                <textarea name="order_note" rows="2" class="form-control"></textarea>
+                <label for="order_note">Order Note</label>
+                <textarea 
+                  name="order_note" 
+                  rows="2" 
+                  class="form-control" 
+                  minlength="10" 
+                  required></textarea>
               </div>
           </div>
-        </div> <!-- card.// -->
-      </aside> <!-- col.// -->
+        </div>
+      </aside>
 
+      <!-- Right Section: Order Summary -->
       <aside class="col-lg-6">
         <div class="card">
           <div class="card-body">
@@ -103,43 +179,34 @@
                       </p>
                     </figcaption>
                   </td>
-                  <td>
-                    <label for="">{{ d.quantity }}</label>
-                  </td>
+                  <td>{{ d.quantity }}</td>
                   <td>
                     <div class="price-wrap">
                       <var class="price">र{{ d.sub_total }}</var>
-                      <small class="text-muted">र{{ d.product.sprice }} each </small>
-                    </div> <!-- price-wrap .// -->
+                      <small class="text-muted">र{{ d.product.sprice }} each</small>
+                    </div>
                   </td>
                 </tr>
                 {% endfor %}
               </tbody>
             </table>
-
             <button type="submit" name="submit" class="btn btn-warning btn-block">Place Order</button>
             <a href="{% url 'Store' %}" class="btn btn-info btn-block">Continue Shopping</a>
-          </div> <!-- card-body.// -->
-        </div> <!-- card.// -->
-        </form>
-      </aside> <!-- col.// -->
-
-    </div> <!-- row.// -->
-
-    <!-- ============================ COMPONENT 1 END .// ================================= -->
-
-  </div> <!-- container .// -->
+          </div>
+        </div>
+      </aside>
+      </form>
+    </div>
+  </div>
 </section>
-<!-- ========================= SECTION CONTENT END// ========================= -->
 
 <script>
+  // Validate phone number before form submission
   function validatePhoneNumber() {
     var phoneNumber = document.getElementById('phone').value;
-    // Regular expression to validate Indian phone number format
-    var regex = /^\d{10}$/; // Assuming a 10-digit number without any formatting
-
+    var regex = /^\+91\d{10}$/; // Must start with +91 followed by exactly 10 digits
     if (!regex.test(phoneNumber)) {
-      alert("Please enter a valid Indian phone number.");
+      alert("Please enter a valid Indian phone number in the format +91XXXXXXXXXX.");
       return false;
     }
     return true;
@@ -151,5 +218,4 @@
     }
   });
 </script>
-
 {% endblock %}

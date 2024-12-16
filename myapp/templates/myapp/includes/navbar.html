@@ -83,30 +83,58 @@
     <div id="shortcut-slider" class="shortcut-slider">
         <!-- Cross Button to Close the Slider -->
         <button id="close-slider-btn" class="slider-close-btn">&times;</button>
-
-        <!-- Profile Section with Rounded Profile Pic -->
+    
+        <!-- Profile Section -->
         <div class="slider-profile-section">
-            <img src="path_to_profile_picture.jpg" alt="Profile Picture" class="slider-profile-pic">
-            <div class="slider-profile-details">
-                <p><strong>John Doe</strong></p>
-                <p>Email: johndoe@example.com</p>
-            </div>
+            {% if request.user.is_authenticated %}
+                <!-- Logged-in User -->
+                {% if user.userprofile.img %}
+                    <img src="{{ user.userprofile.img.url }}" alt="Profile Picture" class="slider-profile-pic">
+                {% else %}
+                    <img src="{% static 'myapp/images/defaultlogo.png' %}" alt="Default Profile Picture" class="slider-profile-pic">
+                {% endif %}
+                <div class="slider-profile-details">
+                    {% if user.first_name and user.last_name %}
+                        <p><strong>Hello, {{ user.first_name }} {{ user.last_name }}!</strong></p>
+                    {% else %}
+                        <p><strong>Hello, User!</strong></p>
+                    {% endif %}
+                    <p>{{ user.email }}</p>
+                </div>
+            {% else %}
+                <!-- Guest User -->
+                <img src="{% static 'myapp/images/defaultlogo.png' %}" alt="Guest Profile Picture" class="slider-profile-pic">
+                <div class="slider-profile-details">
+                    <p><strong>Hello, Guest!</strong></p>
+                    <p><a class="defjjn" href="{% url 'Login' %}">Login to explore more!</a></p>
+                </div>
+            {% endif %}
         </div>
-
+    
         <!-- Menu Links -->
         <ul>
-            <li><a href="{% url 'Home' %}">Home</a></li>
-            <li><a href="{% url 'Store' %}">All Products</a></li>
-            <li><a href="{% url 'Dashboard' %}">Profile</a></li>
-            <li><a href="{% url 'Cart' %}">Cart</a></li>
-            <li><a href="{% url 'Login' %}">Login</a></li>
+            {% if request.user.is_authenticated %}
+                <li><a href="{% url 'Dashboard' %}">Dashboard</a></li>
+                <li><a href="{% url 'MyOrder' %}">My Orders</a></li>
+                <li><a href="{% url 'EditProfile' %}">Edit Profile</a></li>
+                <li><a href="{% url 'Logout' %}">Sign Out</a></li>
+            {% else %}
+                <li><a href="{% url 'Home' %}">Home</a></li>
+                <li><a href="{% url 'Store' %}">Our Shop</a></li>
+                <li><a href="{% url 'Cart' %}">Shopping Cart</a></li>
+                <li><a href="{% url 'Contact' %}">Contact Us</a></li>
+            {% endif %}
         </ul>
     </div>
+     
     </section>
 </header>
 
 <!-- Styles -->
 <style>
+    .defjjn{
+        color:black;
+    }
     .icon-sm {
         width: 48px;
         height: 48px;
@@ -209,8 +237,8 @@
             /* Close button style for the slider */
             .slider-close-btn {
             position: absolute;
-            top: 20px;
-            right: 20px;
+            top: 0px;
+            right: 1px;
             background: transparent;
             border: none;
             color: white;
@@ -239,7 +267,7 @@
         .slider-profile-details p {
             margin: 0;
             color: white;
-            font-size: 15px;
+            font-size: 12px;
         }
 
         /* Styling for the sliding menu */

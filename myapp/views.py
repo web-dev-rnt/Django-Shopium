@@ -290,73 +290,63 @@ def order_completed(request):
 
 
 def payments(request):
-    body = json.loads(request.body)
-    order = Order.objects.get(user=request.user,is_ordered=False,order_number=body['orderID'])
+    if request.method == "POST":
+        try:
+            body = json.loads(request.body)
+            # Get the order
+            order = get_object_or_404(Order, user=request.user, is_ordered=False, order_number=body['orderID'])
 
-    payment = Payment(
-        user = request.user,
-        payment_id = body['transID'],
-        payment_method = body['payment_method'],
-        amount_paid = order.order_total,
-        status = body['status'],
-    )
-    payment.save()
+            # Create Payment instance
+            payment = Payment.objects.create(
+                user=request.user,
+                payment_id=body['transID'],
+                payment_method=body['payment_method'],
+                amount_paid=order.order_total,
+                status=body['status'],
+            )
 
-    order.payment = payment
-    order.is_ordered = True
-    order.save()
+            # Update the order
+            order.payment = payment
+            order.is_ordered = True
+            order.save()
 
-    #Move the cart items to Order Product Table
-    cart_items = CartItems.objects.filter(user=request.user)
+            # Move items from cart to OrderProduct
+            cart_items = CartItems.objects.filter(user=request.user)
+            for item in cart_items:
+                orderproduct = OrderProduct.objects.create(
+                    order_id=order.id,
+                    payment=payment,
+                    user=request.user,
+                    product=item.product,
+                    quantity=item.quantity,
+                    product_price=item.product.sprice,
+                    ordered=True,
+                )
+                orderproduct.variation.set(item.variation.all())
+                orderproduct.save()
 
-    for item in cart_items:
-        orderproduct = OrderProduct()
-        orderproduct.order_id = order.id
-        orderproduct.payment = payment
-        orderproduct.user_id = request.user.id
-        orderproduct.product_id = item.product_id
-        orderproduct.quantity = item.quantity
-        orderproduct.product_price = item.product.sprice
-        orderproduct.ordered = True
-        orderproduct.save()
+                # Reduce product stock
+                item.product.stock -= item.quantity
+                item.product.save()
 
-        cart_item = CartItems.objects.get(id=item.id)
-        product_variation = cart_item.variation.all()
-        orderproduct = OrderProduct.objects.get(id=orderproduct.id)
-        orderproduct.variation.set(product_variation)
-        orderproduct.save()
+            # Clear the cart
+            cart_items.delete()
 
+            # Send order confirmation email
+            mail_subject = 'Thank you for your order!'
+            message = render_to_string('myapp/order_received.html', {'user': request.user, 'order': order})
+            to_email = request.user.email
+            email = EmailMultiAlternatives(mail_subject, message, to=[to_email])
+            email.attach_alternative(message, "text/html")
+            email.send()
 
-        #Reduce the quantity of from original product
-        product = Product.objects.get(id=item.product_id)
-        product.stock -= item.quantity
-        product.save()
+            # Respond with order details
+            return JsonResponse({'order_number': order.order_number, 'transID': payment.payment_id})
 
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=400)
 
-    #clear cart
-    CartItems.objects.filter(user=request.user).delete()
-
-
-    #send email ordered to customer
-
-    mail_subject = 'Thank you for your order!'
-    message = render_to_string('myapp/order_received.html',{
-        'user':request.user,
-        'order':order,
-    })
-    to_email = request.user.email
-    send_email = EmailMultiAlternatives(mail_subject,message,to=[to_email])
-    send_email.attach_alternative(message, "text/html")
-    send_email.send()
-
-    data = {
-        'order_number':order.order_number,
-        'transID':payment.payment_id
-        }
-    return JsonResponse(data)
-    # return render(request,'myapp/payments.html')
-
-
+    return JsonResponse({'error': 'Invalid request'}, status=400)
 
 def order(request,total=0, quantity=0):
     user = request.user
@@ -418,66 +408,66 @@ def order(request,total=0, quantity=0):
 
 
 
-def login_form(request):
-    if request.method == 'POST':
-        email = request.POST['email']
-        passw = request.POST['password']
-        user = auth.authenticate(email=email,password=passw)
-        if user is not None:
-            try:
-                cart = Cart.objects.get(cart_id=_cart_id(request))
-                is_cart_item_exists = CartItems.objects.filter(cart=cart).exists()
-                if is_cart_item_exists:
-                    cart_item = CartItems.objects.filter(cart=cart)
+# def login_form(request):
+#     if request.method == 'POST':
+#         email = request.POST['email']
+#         passw = request.POST['password']
+#         user = auth.authenticate(email=email,password=passw)
+#         if user is not None:
+#             try:
+#                 cart = Cart.objects.get(cart_id=_cart_id(request))
+#                 is_cart_item_exists = CartItems.objects.filter(cart=cart).exists()
+#                 if is_cart_item_exists:
+#                     cart_item = CartItems.objects.filter(cart=cart)
 
-                    #Getting Production variation
-                    list1 = []
-                    for item in cart_item:
-                        variation = item.variation.all()
-                        list1.append(list(variation))
+#                     #Getting Production variation
+#                     list1 = []
+#                     for item in cart_item:
+#                         variation = item.variation.all()
+#                         list1.append(list(variation))
 
-                    #get the cart items to access
-                    cart_items = CartItems.objects.filter(user=user)
-                    ex_var_list = []
-                    id = []
-                    for item in cart_items:
-                        existing_variation = item.variation.all()
-                        ex_var_list.append(list(existing_variation))
-                        id.append(item.id)
+#                     #get the cart items to access
+#                     cart_items = CartItems.objects.filter(user=user)
+#                     ex_var_list = []
+#                     id = []
+#                     for item in cart_items:
+#                         existing_variation = item.variation.all()
+#                         ex_var_list.append(list(existing_variation))
+#                         id.append(item.id)
 
-                    for pr in list1:
-                        if pr in ex_var_list:
-                            index = ex_var_list.index(pr)
-                            item_id = id[index]
-                            item = CartItems.objects.get(id=item_id)
-                            item.quantity += 1
-                            item.user = user
-                            item.save()
-                        else:
-                            cart_item = CartItems.objects.filter(cart=cart)
-                            for item in cart_item:
-                                item.user = user
-                                item.save()
+#                     for pr in list1:
+#                         if pr in ex_var_list:
+#                             index = ex_var_list.index(pr)
+#                             item_id = id[index]
+#                             item = CartItems.objects.get(id=item_id)
+#                             item.quantity += 1
+#                             item.user = user
+#                             item.save()
+#                         else:
+#                             cart_item = CartItems.objects.filter(cart=cart)
+#                             for item in cart_item:
+#                                 item.user = user
+#                                 item.save()
 
-            except:
-                pass
-            auth.login(request,user)
-            url = request.META.get('HTTP_REFERER')
-            try:
-                query = requests.utils.urlparse(url).query
-                params = dict(x.split('=') for x in query.split('&'))
-                if 'next' in params:
-                    nextPage = params['next']
-                    return redirect(nextPage)
+#             except:
+#                 pass
+#             auth.login(request,user)
+#             url = request.META.get('HTTP_REFERER')
+#             try:
+#                 query = requests.utils.urlparse(url).query
+#                 params = dict(x.split('=') for x in query.split('&'))
+#                 if 'next' in params:
+#                     nextPage = params['next']
+#                     return redirect(nextPage)
 
-            except:
-                  return redirect('Dashboard')
+#             except:
+#                   return redirect('Dashboard')
 
-        else:
+#         else:
             
-            messages.error(request,'Invalid login credentials please try again')
-            return redirect('Login')      
-    return render(request,'myapp/login.html')
+#             messages.error(request,'Invalid login credentials please try again')
+#             return redirect('Login')      
+#     return render(request,'myapp/login.html')
 
 
 

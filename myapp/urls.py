@@ -18,17 +18,12 @@ urlpatterns = [
     path('store/search/',views.search,name='Search'),
     path('accounts/login/',views.email_login_or_signup,name='Login'),
     path('accounts/logout/',views.logout,name='Logout'),
-    # path('activate/<uidb64>/<token>/', views.activate, name='activate'),
     path('dashboard/',views.dashboard,name='Dashboard'),
-    # path('forgotpassword/',views.forgotpassword,name='ForgotPassword'),
-    # path('resetpassword/<uidb64>/<token>/', views.resetpassword, name='ResetPassword'),
-    # path('passwordReset/',views.passwordReset,name='PasswordReset'),
     path('checkout/',views.checkout,name='Checkout'),
 
     #OTP Login
-    path('emaillogin/',views.email_login_or_signup,name='email_login'),
+    # path('emaillogin/',views.email_login_or_signup,name='email_login'),
     path('emailverification/',views.verify_otp,name='verify_otp'),
-    # path('userlogin/',views.ask_for_password,name='ask_for_password'),
 
 
     #Orders
@@ -38,7 +33,6 @@ urlpatterns = [
     path('submit_review/<int:product_id>/',views.submtreview,name='SubmtReview'),
     path('myorders/',views.my_order,name='MyOrder'),
     path('edit_profile/',views.editprofile,name='EditProfile'),
-    # path('changepass/',views.changepass,name='ChangePass'),
     path('orderdetails/<int:order_id>/',views.orderdetails,name='OrderDetail'),
 
     path('deletereview/<int:user_id>/',views.deleterev,name='DeleteRev'),
@@ -49,6 +43,7 @@ urlpatterns = [
     path('generate-pdf/<str:order_number>/',views.generatepdf, name='GenPdf'),
 
     #Social media links update
-    path('socialmedia/',views.socialmedia,name='Socialmedia')
+    path('socialmedia/',views.socialmedia,name='Socialmedia'),
+
 
 ]+ static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)
