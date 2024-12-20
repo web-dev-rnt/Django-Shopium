@@ -96,8 +96,7 @@
                     <h4 class="mantitle">Men Section</h4>
                 </header>
                 <div id="hiddenitems" class="row">
-                    {% for d, discount in product_discounts %}
-                    {% if d.category != "Women's Top Wear" %}
+                    {% for d, discount in men_bottom_wear_discounts %}
                     <div class="col-4 col-sm-4 col-md-4 col-lg-3">
                         <div class="card card-product-grid" style="box-shadow: none; border: 1px solid #ddd;">
                             <a href="{{ d.get_url }}" class="img-wrap">
@@ -116,8 +115,9 @@
                             </figcaption>
                         </div>
                     </div>
-                    {% endif %}
                     {% endfor %}
+                </div>
+                
                 </div>
             </div>
         </div>

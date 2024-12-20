@@ -478,13 +478,20 @@ def logout(request):
     messages.info(request,'You are logged out')
     return redirect('Login')
 
-
 def home(request):
+    # Filter products for the specified category
+    men_bottom_wear_category = "men-bottom-wear"  # Replace with the slug or identifier of the category
+    men_bottom_wear_products = Product.objects.filter(
+        is_available=True, 
+        category__slug=men_bottom_wear_category
+    )
+
+    # Get general products and latest products
     products = Product.objects.filter(is_available=True)[:8]
     latest_products = Product.objects.filter(is_available=True).order_by('-created_at')[:4]
 
+    # Calculate discounts for general products
     product_discounts = [] 
-
     for product in products:
         original_price = product.price
         selling_price = product.sprice
@@ -497,12 +504,10 @@ def home(request):
             return round(percentage_discount, 2)  # Round to two decimal places
 
         percentage_discount = round(calculate_percentage_discount(original_price, selling_price))
-
         product_discounts.append((product, percentage_discount))
 
-    latest_product_discounts = []  # List to store tuples of (product, discount)
-
     # Calculate discounts for latest products
+    latest_product_discounts = [] 
     for product in latest_products:
         original_price = product.price
         selling_price = product.sprice
@@ -515,14 +520,31 @@ def home(request):
             return round(percentage_discount, 2)  # Round to two decimal places
 
         percentage_discount = round(calculate_percentage_discount(original_price, selling_price))
-
         latest_product_discounts.append((product, percentage_discount))
+
+    # Calculate discounts for category-specific products
+    men_bottom_wear_discounts = []
+    for product in men_bottom_wear_products:
+        original_price = product.price
+        selling_price = product.sprice
+
+        def calculate_percentage_discount(original_price, selling_price):
+            if original_price == 0:
+                return 0  # Handle the case where the original price is zero to avoid division by zero
+
+            percentage_discount = ((original_price - selling_price) / original_price) * 100
+            return round(percentage_discount, 2)  # Round to two decimal places
+
+        percentage_discount = round(calculate_percentage_discount(original_price, selling_price))
+        men_bottom_wear_discounts.append((product, percentage_discount))
 
     context = {
         'product_discounts': product_discounts,
-        'latest_product_discounts': latest_product_discounts
+        'latest_product_discounts': latest_product_discounts,
+        'men_bottom_wear_discounts': men_bottom_wear_discounts
     }
     return render(request, 'myapp/index.html', context)
+
 
 
 def store(request, category_slug=None):
@@ -795,9 +817,12 @@ def dashboard(request):
     }
     return render(request,'myapp/dashboard.html',context)
 
-
 @login_required(login_url='Login')
 def checkout(request, total=0, quantity=0, cart_items=None):
+    # Initialize variables to avoid UnboundLocalError
+    user_profile = None
+    account = None
+
     try:
         tax = 0
         grand_total = 0
@@ -818,8 +843,9 @@ def checkout(request, total=0, quantity=0, cart_items=None):
         grand_total = total + tax
 
     except ObjectDoesNotExist:
+        # Log the error or handle it appropriately
         pass
-    
+
     context = {
         'total': total,
         'quantity': quantity,
@@ -827,8 +853,8 @@ def checkout(request, total=0, quantity=0, cart_items=None):
         'tax': tax,
         'grand_total': grand_total,
         # Pass the user profile and account details to the context for pre-filling the form
-        'user_profile': user_profile if request.user.is_authenticated else None,
-        'account': account if request.user.is_authenticated else None,
+        'user_profile': user_profile,
+        'account': account,
     }
     return render(request, 'myapp/checkout.html', context)
 
