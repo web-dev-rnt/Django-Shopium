@@ -44,6 +44,6 @@ urlpatterns = [
 
     #Social media links update
     path('socialmedia/',views.socialmedia,name='Socialmedia'),
-
+    path('cancel-session/', views.cancel_session, name='cancel_session'),
 
 ]+ static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)

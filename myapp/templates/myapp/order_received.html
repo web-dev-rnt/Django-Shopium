@@ -4,23 +4,90 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registration Confirmation</title>
+    <title>Order Confirmation</title>
 </head>
 <body>
     <div style="font-family: Arial, sans-serif; background-color: #f5f5f5; margin: 0; padding: 0;">
         <div style="max-width: 600px; margin: 20px auto; padding: 20px; background-color: #fff; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
             <center>
-            <h1>Hi {{ user.first_name }} {{ user.last_name }}</h1>
-            <h3>Your order has been recieved</h3>
-            <h5>Order Number: {{order.order_number}}</h5>
-            <p>Order will be delivered at {{order.address_line_1}}</p>
-            <p>Total:Rs{{order.order_total}}</p>
-            <!-- Apply inline CSS directly to the anchor tag -->
-            <p style="margin-top: 20px; font-style: italic;">If you think it's not you, please ignore this email.</p>
+                <h1 style="color: #ff9017; margin-bottom: 5px;">Shopium</h1>
+                <h2 style="margin: 10px 0;">Hi {{ user.first_name|default:"User" }} {{ user.last_name|default:"!" }}</h2>
+                <h4>Your order has been received!</h4>
+                <hr style="border: none; border-top: 1px solid #ddd; margin: 20px 0;">
+                <p style="font-size: 16px;">Thank you for shopping with us. Here are your order details:</p>
+                <table style="width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 14px;">
+                    <tr>
+                        <td style="padding: 10px; border: 1px solid #ddd;">Order Number:</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">{{ order.order_number }}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px; border: 1px solid #ddd;">Customer Name:</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">{{ order.first_name }} {{ order.last_name }}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px; border: 1px solid #ddd;">Phone:</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">{{ order.phone }}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px; border: 1px solid #ddd;">Email:</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">{{ order.email }}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px; border: 1px solid #ddd;">Delivery Address:</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">
+                            {{ order.address_line_1 }}<br>
+                            {% if order.address_line_2 %}{{ order.address_line_2 }}<br>{% endif %}
+                            {{ order.city }}, {{ order.state }}<br>
+                            {{ order.country }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px; border: 1px solid #ddd;">Order Note:</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">{{ order.order_note|default:"N/A" }}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px; border: 1px solid #ddd;">Total taxes + GST:</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">Rs {{ order.tax }}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px; border: 1px solid #ddd;">Total Amount + Taxes:</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">Rs {{ order.order_total }}</td>
+                    </tr>
+                    
+                    <tr>
+                        <td style="padding: 10px; border: 1px solid #ddd;">Total Amount:</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">Rs {{ order.order_total }}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px; border: 1px solid #ddd;">Products:</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">
+                            {% for item in order.orderproduct_set.all %}
+                                <p>{{ item.product.name }} - Rs {{ item.product_price }} (Qty: {{ item.quantity }})</p>
+                            {% endfor %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px; border: 1px solid #ddd;">Payment Status:</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">{{ payment.status }}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px; border: 1px solid #ddd;">Payment Date:</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">{{ payment.created_at|date:"d M Y, H:i" }}</td>
+                    </tr>
+                    
+                    
+                </table>
+                <p style="font-size: 14px; margin-top: 20px;">If you think this email was sent to you by mistake, please ignore it or contact our support team.</p>
+                <p style="font-size: 14px; font-style: italic; color: #888;">Need help? Contact us at webdevrnt@gmail.com or call +91 7905817391.</p>
             </center>
+            <hr style="border: none; border-top: 1px solid #ddd; margin: 20px 0;">
+            <footer style="font-size: 12px; text-align: center; color: #888;">
+                <h2><strong>Developed by Rudra Narayan Tiwari</strong></h2>
+                <h3>Email: webdevrnt@gmail.com | LinkedIn: <a href="https://www.linkedin.com/in/rrnntt" style="color: #4CAF50; text-decoration: none;">linkedin.com/in/rrnntt</a></h3>
+                <p>&copy; 2024 Shopium. All rights reserved.</p>
+            </footer>
         </div>
     </div>
 </body>
 </html>
 {% endautoescape %}
-

@@ -1,89 +1,149 @@
 {% extends 'myapp/base.html' %}
 {% block content %}
 
-<!-- ========================= SECTION CONTENT ========================= -->
-<section class="section-conten padding-y bg">
-<div class="container">
-	<div class="row">
- {% include 'myapp/dashboardsidebar.html' %}
-	<main class="col-md-9">
-		<article class="card">
-		<header class="card-header">
-			<strong class="d-inline-block mr-3">Edit Profile</strong>
-		</header>
-		{% include 'myapp/includes/message.html' %}
-		<div class="card-body">
-			<div>
-				{% if userprofile.img %}
-			    <a href="{{ userprofile.img.url }}" target="_blank">
-			        <img src="{{ userprofile.img.url }}" alt="Profile Picture" width="100" style="border-radius:20px;">
-			    </a>
-					{% else %}
-          <p>No profile picture uploaded</p>
-					{% endif %}
-			</div>
-			<br>
-			<div class="row">
-			<div class="col-md-12">
-				<form class="" enctype="multipart/form-data" action="" method="post">
-				{% csrf_token %}
+<section class="section-content padding-y bg">
+    <div class="container">
+        <div class="row">
+            {% include 'myapp/dashboardsidebar.html' %}
+            <main class="col-md-9">
+                <article class="card">
+                    <header class="card-header">
+                        <strong class="d-inline-block mr-3">Edit Profile</strong>
+                    </header>
+                    {% include 'myapp/includes/message.html' %}
+                    <div class="card-body">
+                        <div>
+                            <!-- Current profile picture or preview of the uploaded image -->
+                            <div id="profile-picture-container">
+                                {% if user.img %}
+                                    <a href="{{ user.img.url }}" target="_blank">
+                                        <img src="{{ user.img.url }}" alt="Profile Picture" width="100" style="border-radius:20px;">
+                                    </a>
+                                {% else %}
+                                    <p>No profile picture uploaded</p>
+                                {% endif %}
+                            </div>
+                            <br>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <form enctype="multipart/form-data" action="" method="post">
+                                        {% csrf_token %}
+                                        <div class="form-row">
+                                            <div class="form-group col-md-6">
+                                                <label>First Name</label>
+                                                <input type="text" name="first_name" class="form-control" value="{{ user.first_name|default:'' }}" minlength="5" placeholder="Enter your first name" required>
+                                            </div>
+                                            <div class="form-group col-md-6">
+                                                <label>Last Name</label>
+                                                <input type="text" name="last_name" class="form-control" value="{{ user.last_name|default:'' }}" minlength="5" placeholder="Enter your last name" required>
+                                            </div>
+                                        </div>
 
-				<div class="form-row">
-					<div class="form-group col-md-6">
-						<label>First Name</label>
-						{{form.first_name}}
-					</div>
-					<div class="form-group col-md-6">
-						<label>Last Name</label>
-						{{form.last_name}}
-					</div>
-				</div>
+                                        <div class="form-row">
+                                          <div class="col form-group">
+                                            <label for="phone">Phone Number</label>
+                                            <input
+                                              type="text"
+                                              name="phone"
+                                              id="phone"
+                                              class="form-control"
+                                              value="{{ user.phone_number|default:'' }}"
+                                              placeholder="+91XXXXXXXXXX"
+                                              pattern="^\+91\d{10}$"
+                                              title="Phone number must be in the format +91XXXXXXXXXX"
+                                              required>
+                                          </div>
+                                            <div class="form-group col-md-6">
+                                                <label for="img">Upload Profile Image:</label>
+                                                <input type="file" name="img" class="form-control" id="img" accept="image/*" onchange="previewImage(event)">
+                                            </div>
+                                        </div>
 
-				<div class="form-row">
-					<div class="form-group col-md-6">
-						<label>Phone Number</label>
-						{{form.phone_number}}
-					</div>
+                                        <!-- Address Fields -->
+                                        <div class="form-group">
+                                            <label>Address</label>
+                                            <input type="text" name="address_line_1" class="form-control" value="{{ user.address_line_1|default:'' }}" minlength="25" maxlength="220" placeholder="Enter your address" required>
+                                        </div>
 
-						<div class="form-group col-md-6">
-						    <label for="profile_image">Upload Profile Image:</label>
-    <input type="file" class="form-control" id="profile_image" name="profile_image">
-						</div>
-				</div>
+                                        <div class="form-group">
+                                            <label>Alternative Address</label>
+                                            <input type="text" name="address_line_2" class="form-control" value="{{ user.address_line_2|default:'' }}" minlength="25" maxlength="220" placeholder="Enter alternative address" required>
+                                        </div>
 
-				<div class="form-group">
-					<label>Address Line 1</label>
-				{{pform.address_line_1}}
-				</div>
-				<div class="form-group">
-					<label>Address Line 2</label>
-						{{pform.address_line_2}}
-				</div>
+                                        <!-- City, State, and Country -->
+                                        <div class="form-row">
+                                            <div class="form-group col-md-4">
+                                                <label>City</label>
+                                                <select name="city" class="form-control" required>
+                                                    <option value="">Select City</option>
+                                                    <option value="Delhi" {% if user.city == 'Delhi' %}selected{% endif %}>Delhi</option>
+                                                    <option value="Mumbai" {% if user.city == 'Mumbai' %}selected{% endif %}>Mumbai</option>
+                                                    <option value="Bangalore" {% if user.city == 'Bangalore' %}selected{% endif %}>Bangalore</option>
+                                                    <option value="Chennai" {% if user.city == 'Chennai' %}selected{% endif %}>Chennai</option>
+                                                    <option value="Kolkata" {% if user.city == 'Kolkata' %}selected{% endif %}>Kolkata</option>
+                                                    <!-- Add other cities here -->
+                                                </select>
+                                            </div>
 
-				<div class="form-row">
-					<div class="form-group col-md-4">
-						<label>City</label>
-							{{pform.city}}
-					</div>
-					<div class="form-group col-md-4">
-						<label>States</label>
-							{{pform.state}}
-					</div>
-					<div class="form-group col-md-4">
-						<label>Country</label>
-							{{pform.country}}
-					</div>
-				</div>
-				<input type="submit" class="btn btn-warning" name="" value="Save">
-				</form>
-			</div>
-				</div>
-			</div> <!-- row.// -->
-		</article> <!-- order-group.// -->
-	</main>
-</div> <!-- row.// -->
-</div>
+                                            <div class="form-group col-md-4">
+                                                <label>State</label>
+                                                <select name="state" class="form-control" required>
+                                                    <option value="">Select State</option>
+                                                    <option value="Delhi" {% if user.state == 'Delhi' %}selected{% endif %}>Delhi</option>
+                                                    <option value="Maharashtra" {% if user.state == 'Maharashtra' %}selected{% endif %}>Maharashtra</option>
+                                                    <option value="Karnataka" {% if user.state == 'Karnataka' %}selected{% endif %}>Karnataka</option>
+                                                    <option value="Tamil Nadu" {% if user.state == 'Tamil Nadu' %}selected{% endif %}>Tamil Nadu</option>
+                                                    <option value="West Bengal" {% if user.state == 'West Bengal' %}selected{% endif %}>West Bengal</option>
+                                                    <!-- Add other states here -->
+                                                </select>
+                                            </div>
+
+                                            <div class="form-group col-md-4">
+                                                <label>Country</label>
+                                                <select name="country" class="form-control" required>
+                                                    <option value="India" {% if user.country == 'India' %}selected{% endif %}>India</option>
+                                                    <option value="Nepal" {% if user.country == 'Nepal' %}selected{% endif %}>Nepal</option>
+                                                    <option value="Bangladesh" {% if user.country == 'Bangladesh' %}selected{% endif %}>Bangladesh</option>
+                                                    <option value="Sri Lanka" {% if user.country == 'Sri Lanka' %}selected{% endif %}>Sri Lanka</option>
+                                                    <option value="Pakistan" {% if user.country == 'Pakistan' %}selected{% endif %}>Pakistan</option>
+                                                    <!-- Add other countries here -->
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <input type="submit" class="btn btn-warning" value="Save">
+                                    </form>
+                                </div>
+                            </div>
+                        </div> <!-- row.// -->
+                    </div> <!-- card-body.// -->
+                </article> <!-- order-group.// -->
+            </main>
+        </div> <!-- row.// -->
+    </div>
 </section>
-<!-- ========================= SECTION CONTENT END// ========================= -->
+
+
+
+<script>
+    // Function to preview the uploaded image in the same container
+    function previewImage(event) {
+        const file = event.target.files[0];  // Get the selected file
+        const profilePictureContainer = document.getElementById('profile-picture-container');
+
+        if (file) {
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                // Replace the current content with the new image preview
+                profilePictureContainer.innerHTML = '<img src="' + e.target.result + '" alt="Profile Picture" width="100" style="border-radius:20px;"/>';
+            };
+
+            reader.readAsDataURL(file);  // Read the file as a data URL
+        } else {
+            profilePictureContainer.innerHTML = '<p>No profile picture uploaded</p>';  // Reset the content if no file is selected
+        }
+    }
+</script>
 
 {% endblock content %}

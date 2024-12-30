@@ -9,7 +9,7 @@
             display: flex;
         }
     }
-    
+
     .googfont {
         font-family: Roboto Mono;
         font-size: 25px;
@@ -20,7 +20,7 @@
         color: #7c7676;
     }
 
-    
+
 
     .product-image {
         width: 100%;
@@ -32,7 +32,7 @@
 
 <!-- ========================= SECTION MAIN ========================= -->
 <section class="section-name padding-y-sm">
-    <div class="container">
+    <div class="container-fluid">
         <header class="section-heading">
             <h3 class="mantitle">Categories</h3>
         </header>
@@ -58,15 +58,14 @@
 
 <!-- ========================= WOMEN'S PRODUCT DISPLAY ========================= -->
 <section class="section-name padding-y-sm">
-    <div class="container">
+    <div class="container-fluid">
         <div class="row">
             <div class="col-12 col-md-6">
                 <header class="section-heading">
                     <h4 class="mantitle">Women Section</h4>
                 </header>
                 <div id="hiddenitems" class="row">
-                    {% for d, discount in product_discounts %}
-                    {% if d.category != "Women's Top Wear" %}
+                      {% for d, discount in women_top_wear_discounts %}
                     <div class="col-4 col-sm-4 col-md-4 col-lg-3">
                         <div class="card card-product-grid" style="box-shadow: none; border: 1px solid #ddd;">
                             <a href="{{ d.get_url }}" class="img-wrap">
@@ -85,7 +84,6 @@
                             </figcaption>
                         </div>
                     </div>
-                    {% endif %}
                     {% endfor %}
                 </div>
             </div>
@@ -117,7 +115,7 @@
                     </div>
                     {% endfor %}
                 </div>
-                
+
                 </div>
             </div>
         </div>
@@ -126,7 +124,7 @@
 
 <!-- ========================= POPULAR PRODUCTS ========================= -->
 <section class="section-name padding-y-sm">
-    <div class="container">
+    <div class="container-fluid">
         <header class="section-heading">
             <a href="{% url 'Store' %}" class="btn btn-outline-warning float-right">See all</a>
             <h3 class="mantitle">Popular products</h3>
@@ -162,7 +160,7 @@
 
 <!-- ========================= RECENT PRODUCTS ========================= -->
 <section class="section-name padding-y-sm">
-    <div class="container">
+    <div class="container-fluid">
         <header class="section-heading">
             <h3 class="section-title">Recent products</h3>
         </header>

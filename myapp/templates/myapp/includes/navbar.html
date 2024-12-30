@@ -1,7 +1,7 @@
 {% load static %}
 <header>
     <section class="header-main border-bottom">
-        <div class="container">
+        <div class="container-fluid">
             <div class="row align-items-center">
                 <!-- Brand Logo -->
                 <div class="col-lg-2 col-md-3 col-6">
@@ -83,7 +83,7 @@
     <div id="shortcut-slider" class="shortcut-slider">
         <!-- Cross Button to Close the Slider -->
         <button id="close-slider-btn" class="slider-close-btn">&times;</button>
-    
+
         <!-- Profile Section -->
         <div class="slider-profile-section">
             {% if request.user.is_authenticated %}
@@ -110,7 +110,7 @@
                 </div>
             {% endif %}
         </div>
-    
+
         <!-- Menu Links -->
         <ul>
             {% if request.user.is_authenticated %}
@@ -126,12 +126,20 @@
             {% endif %}
         </ul>
     </div>
-     
+
     </section>
 </header>
 
 <!-- Styles -->
 <style>
+  /* Remove default margin between the columns and set custom spacing */
+.category-section {
+    margin-right: -18px; /* Add space to the right of the category button */
+}
+
+.search {
+    margin-left: 0;  /* Remove left margin to bring the search bar closer to the button */
+}
     .defjjn{
         color:black;
     }

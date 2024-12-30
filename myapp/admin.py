@@ -2,32 +2,46 @@ from django.contrib import admin
 from .models import *
 from django.utils.html import format_html
 import admin_thumbnails
+from django.contrib import admin
+from django.utils.html import format_html
+
+@admin.register(Account)
+class UserAdmin(admin.ModelAdmin):
+    readonly_fields = ['password', 'is_admin', 'is_active', 'is_staff', 'is_superadmin']
+    search_fields = ['first_name', 'last_name', 'email', 'phone_number']
+    list_display_links = ['email', 'first_name', 'last_name']
+    list_display = [
+        'id', 
+        'first_name', 
+        'last_name', 
+        'email', 
+        'phone_number', 
+        'date_joined', 
+        'last_login', 
+        'is_active', 
+        'thumbnail', 
+        'city', 
+        'state', 
+        'country',
+    ]
+
+    def thumbnail(self, obj):
+        if obj.img:
+            return format_html('<img src="{}" width="30" style="border-radius:50%;">'.format(obj.img.url))
+        return "No Image"
+    thumbnail.short_description = 'Thumbnail'
 
 
-# Register your models here.
 @admin.register(Contact)
 class ContactAmin(admin.ModelAdmin):
     list_display = ['name','email','subject','message']
 
 
-@admin.register(UserProfile)
-class UserProfileAdmin(admin.ModelAdmin):
-    list_display = ['user','address_line_1','address_line_2','img','city','state','country', 'thumbnail']
-
-    def thumbnail(self, obj):
-        return format_html('<img src="{}" width="30" style="border-radius:50%;">'.format(obj.img.url))
-    thumbnail.short_description = 'Thumbnail'
-
 @admin.register(ReviewRating)
 class ReviewRatingAdmin(admin.ModelAdmin):
     list_display = ['id', 'product', 'user', 'review', 'rating', 'ip', 'status','img1','img2','img3','img4','img5','created_at', 'updated_at']
 
-@admin.register(Account)
-class AccountAdmin(admin.ModelAdmin):
-    readonly_fields = ['password','is_admin','is_active','is_staff','is_superadmin']
-    search_fields = ['first_name','last_name']
-    list_display_links = ['email','first_name','last_name']
-    list_display = ['id','first_name','last_name','email','phone_number','date_joined','last_login','is_active']
+
 
 @admin.register(Payment)
 class PaymentModel(admin.ModelAdmin):

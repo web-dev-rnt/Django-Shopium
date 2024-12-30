@@ -18,7 +18,7 @@
         <span style="color:grey; font-size:11px;">Email sent to {{ email }}</span>
       </div>
 
-      <form method="post" novalidate>
+      <form method="post" novalidate onsubmit="handleSubmit(event)">
         {% csrf_token %}
         
         <div class="mb-3">
@@ -34,21 +34,40 @@
         </div>
 
         <div class="mt-3">
-          <button type="submit" style="background:#ff9017; border:#ff9017;" class="btn btn-primary w-100">Verify OTP</button>
+          <button id="verify-btn" type="submit" style="background:#ff9017; border:#ff9017;" class="btn btn-primary w-100">
+            Verify OTP
+          </button>
         </div>
       </form>
 
       <div class="mt-3 text-center">
-        <small class="mt-2">Having trouble logging in? <strong style="color:#ff9017;">Get help</strong></small>
+        <small onclick="showHelpPopup()" class="mt-2" style="cursor: pointer;">Having trouble logging in? <strong style="color:#ff9017;">Get help</strong></small>
+      </div>
+
+      <!-- Cancel session button -->
+      <div class="mt-3 text-center">
+        <a href="{% url 'cancel_session' %}" class="btn btn-outline-secondary w-100" style="margin-top: 10px;">Cancel</a>
       </div>
 
     </div> <!-- card-body.// -->
   </div> <!-- card .// -->
 
+<!-- Help Popup -->
+<div id="helpPopup" class="popup">
+  <div class="popup-content">
+    <span class="close" onclick="closeHelpPopup()">&times;</span>
+    <h5>Get Help</h5>
+    <p>If you are facing difficulties logging in, you can reset your email or account by contacting the developer.</p>
+    <p><strong>Name:</strong> Rudra Narayan Tiwari</p>
+    <p><strong>Contact Email:</strong> <a href="mailto:webdevrnt@gmail.com">webdevrnt@gmail.com</a></p>
+    <p><strong>Phone Number:</strong> +91 7905817391</p>
+    <p><strong>LinkedIn:</strong> <a href="https://linkedin.com/in/rrnntt" target="_blank">linkedin.com/in/rrnntt</a></p>
+  </div>
+</div>
+
 </section>
 
 <style>
-
   /* Responsive adjustments */
   @media (max-width: 768px) {
     .card {
@@ -85,6 +104,17 @@
     background-color: #ff9017;
     border: 1px solid #ff9017;
   }
+  
+  .btn-outline-secondary {
+    color: #6c757d;
+    border: 1px solid #6c757d;
+    background-color: #fff;
+  }
+  .btn-outline-secondary:hover {
+    background-color: #6c757d;
+    color: #fff;
+  }
+
   .errors {
     color: red;
     list-style-type: none;
@@ -95,8 +125,75 @@
   
   .errors li {
     font-size: 12px;
-  } 
+  }
 
+  /* Popup styles */
+  .popup {
+    display: none; 
+    position: fixed; 
+    z-index: 999; 
+    left: 0; 
+    top: 0; 
+    width: 100%; 
+    height: 100%; 
+    background-color: rgba(0, 0, 0, 0.5); 
+  }
+
+  .popup-content {
+    background-color: #fff;
+    margin: 15% auto;
+    padding: 20px;
+    border-radius: 10px;
+    max-width: 400px;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  }
+
+  .popup-content h5 {
+    margin-top: 0;
+    color: #333;
+  }
+
+  .popup-content a {
+    color: #ff9017;
+    text-decoration: none;
+  }
+
+  .popup-content a:hover {
+    text-decoration: underline;
+  }
+
+  .popup-content .close {
+    color: #aaa;
+    font-size: 24px;
+    font-weight: bold;
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    cursor: pointer;
+  }
+
+  .popup-content .close:hover {
+    color: #333;
+  }
 </style>
+
+<script>
+  function handleSubmit(event) {
+    const button = document.getElementById('verify-btn');
+    button.disabled = true; // Disable the button
+    button.innerHTML = `
+      <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Verifying...
+    `; // Add spinner and update text
+  }
+
+  function showHelpPopup() {
+    document.getElementById('helpPopup').style.display = 'block';
+  }
+
+  function closeHelpPopup() {
+    document.getElementById('helpPopup').style.display = 'none';
+  }
+</script>
 
 {% endblock %}

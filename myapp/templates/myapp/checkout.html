@@ -9,89 +9,144 @@
       <aside class="col-lg-6">
         <div class="card">
           <div class="card-body">
-            <h4 class="card-title mb-4">Billing Address</h4>
+            <h4 class="card-title mb-2">Billing Address</h4>
+            <span style="color: red; display: block; margin-bottom: 20px;">
+      If you want to deliver it to another address,
+      <a href="#" style="color: blue;">Add another address</a>.
+    </span>
+
             <form action="{% url 'Order' %}" method="POST">
               {% csrf_token %}
+
               <div class="form-row">
                 <div class="col form-group">
                   <label for="first_name">First Name</label>
-                  <input 
-                    type="text" 
-                    name="first_name" 
-                    class="form-control" 
-                    value="{{ account.first_name|default:'' }}" 
-                    minlength="5" 
+                  <input
+                    type="text"
+                    name="first_name"
+                    class="form-control"
+                    value="{{ first_name|default:'' }}"
+                    minlength="5"
                     required>
+                  {% if form.first_name.errors %}
+                    <div class="text-danger small">
+                      {% for error in form.first_name.errors %}
+                        <p>{{ error }}</p>
+                      {% endfor %}
+                    </div>
+                  {% endif %}
                 </div>
                 <div class="col form-group">
                   <label for="last_name">Last Name</label>
-                  <input 
-                    type="text" 
-                    name="last_name" 
-                    class="form-control" 
-                    value="{{ account.last_name|default:'' }}" 
-                    minlength="5" 
+                  <input
+                    type="text"
+                    name="last_name"
+                    class="form-control"
+                    value="{{ last_name|default:'' }}"
+                    minlength="5"
                     required>
+                  {% if form.last_name.errors %}
+                    <div class="text-danger small">
+                      {% for error in form.last_name.errors %}
+                        <p>{{ error }}</p>
+                      {% endfor %}
+                    </div>
+                  {% endif %}
                 </div>
               </div>
 
               <div class="form-row">
                 <div class="col form-group">
                   <label for="email">Email</label>
-                  <input 
-                    type="email" 
-                    name="email" 
-                    class="form-control" 
-                    value="{{ account.email|default:'' }}" 
+                  <input
+                    type="email"
+                    name="email"
+                    class="form-control"
+                    value="{{ account.email|default:'' }}"
                     required>
+                  {% if form.email.errors %}
+                    <div class="text-danger small">
+                      {% for error in form.email.errors %}
+                        <p>{{ error }}</p>
+                      {% endfor %}
+                    </div>
+                  {% endif %}
                 </div>
                 <div class="col form-group">
                   <label for="phone">Phone Number</label>
-                  <input 
-                    type="text" 
-                    name="phone" 
-                    id="phone" 
-                    class="form-control" 
-                    value="{{ account.phone_number|default:'' }}" 
-                    placeholder="+91XXXXXXXXXX" 
-                    pattern="^\+91\d{10}$" 
-                    title="Phone number must be in the format +91XXXXXXXXXX" 
+                  <input
+                    type="text"
+                    name="phone"
+                    id="phone"
+                    class="form-control"
+                    value="{{ phone_number|default:'' }}"
+                    placeholder="+91XXXXXXXXXX"
+                    pattern="^\+91\d{10}$"
+                    title="Phone number must be in the format +91XXXXXXXXXX"
                     required>
+                  {% if form.phone.errors %}
+                    <div class="text-danger small">
+                      {% for error in form.phone.errors %}
+                        <p>{{ error }}</p>
+                      {% endfor %}
+                    </div>
+                  {% endif %}
                 </div>
               </div>
 
               <div class="form-row">
                 <div class="col form-group">
                   <label for="address_line_1">Address Line 1</label>
-                  <input 
-                    type="text" 
-                    name="address_line_1" 
-                    class="form-control" 
-                    minlength="20" 
-                    value="{{ user_profile.address_line_1|default:'' }}" 
+                  <input
+                    type="text"
+                    name="address_line_1"
+                    class="form-control"
+                    minlength="20"
+                    value="{{ address_line_1|default:'' }}"
                     required>
+                  {% if form.address_line_1.errors %}
+                    <div class="text-danger small">
+                      {% for error in form.address_line_1.errors %}
+                        <p>{{ error }}</p>
+                      {% endfor %}
+                    </div>
+                  {% endif %}
                 </div>
                 <div class="col form-group">
                   <label for="address_line_2">Address Line 2</label>
-                  <input 
-                    type="text" 
-                    name="address_line_2" 
-                    class="form-control" 
-                    minlength="20" 
-                    value="{{ user_profile.address_line_2|default:'' }}" 
+                  <input
+                    type="text"
+                    name="address_line_2"
+                    class="form-control"
+                    minlength="20"
+                    value="{{ address_line_2|default:'' }}"
                     required>
+                  {% if form.address_line_2.errors %}
+                    <div class="text-danger small">
+                      {% for error in form.address_line_2.errors %}
+                        <p>{{ error }}</p>
+                      {% endfor %}
+                    </div>
+                  {% endif %}
                 </div>
               </div>
 
               <div class="form-row">
                 <div class="col form-group">
                   <label for="city">City</label>
-                  <input 
-                    list="city-list" 
-                    name="city" 
-                    class="form-control" 
-                    value="{{ user_profile.city|default:'' }}" 
+                  <input
+                    list="city-list"
+                    name="city"
+                    class="form-control"
+                    value="{{ city|default:'' }}"
                     required>
+                  {% if form.city.errors %}
+                    <div class="text-danger small">
+                      {% for error in form.city.errors %}
+                        <p>{{ error }}</p>
+                      {% endfor %}
+                    </div>
+                  {% endif %}
                   <datalist id="city-list">
                     <option value="Lucknow">
                     <option value="Delhi">
@@ -102,12 +157,19 @@
                 </div>
                 <div class="col form-group">
                   <label for="state">State</label>
-                  <input 
-                    list="state-list" 
-                    name="state" 
-                    class="form-control" 
-                    value="{{ user_profile.state|default:'' }}" 
+                  <input
+                    list="state-list"
+                    name="state"
+                    class="form-control"
+                    value="{{ state|default:'' }}"
                     required>
+                  {% if form.state.errors %}
+                    <div class="text-danger small">
+                      {% for error in form.state.errors %}
+                        <p>{{ error }}</p>
+                      {% endfor %}
+                    </div>
+                  {% endif %}
                   <datalist id="state-list">
                     <option value="Uttar Pradesh">
                     <option value="Delhi">
@@ -118,12 +180,19 @@
                 </div>
                 <div class="col form-group">
                   <label for="country">Country</label>
-                  <input 
-                    list="country-list" 
-                    name="country" 
-                    class="form-control" 
-                    value="{{ user_profile.country|default:'' }}" 
+                  <input
+                    list="country-list"
+                    name="country"
+                    class="form-control"
+                    value="{{ country|default:'' }}"
                     required>
+                  {% if form.country.errors %}
+                    <div class="text-danger small">
+                      {% for error in form.country.errors %}
+                        <p>{{ error }}</p>
+                      {% endfor %}
+                    </div>
+                  {% endif %}
                   <datalist id="country-list">
                     <option value="India">
                   </datalist>
@@ -132,13 +201,16 @@
 
               <div class="form-row">
                 <label for="order_note">Order Note</label>
-                <textarea 
-                  name="order_note" 
-                  rows="2" 
-                  class="form-control" 
-                  minlength="10" 
+                <textarea
+                  name="order_note"
+                  rows="2"
+                  class="form-control"
+                  minlength="10"
                   required></textarea>
               </div>
+
+
+
           </div>
         </div>
       </aside>
@@ -190,12 +262,12 @@
                 {% endfor %}
               </tbody>
             </table>
-            <button type="submit" name="submit" class="btn btn-warning btn-block">Place Order</button>
+                <button type="submit" name="submit" class="btn btn-warning btn-block">Place Order</button>
             <a href="{% url 'Store' %}" class="btn btn-info btn-block">Continue Shopping</a>
+              </form>
           </div>
         </div>
       </aside>
-      </form>
     </div>
   </div>
 </section>

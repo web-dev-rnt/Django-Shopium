@@ -18,7 +18,7 @@
           <span><strong style="font-size:22px;">Login</strong> or <strong style="font-size:22px;">Signup</strong></span>
         </div>
 
-        <form method="post" novalidate>
+        <form method="post" novalidate id="login-form" onsubmit="handleFormSubmit(event)">
           {% csrf_token %}
           
           <div class="mb-3">
@@ -31,83 +31,115 @@
             </ul>
             <small class="form-text">{{ form.email.help_text }}</small>
           </div>
-
+        
           <div class="mt-3 text-center">
-            <small>By continuing, I agree to the <a href="#" data-bs-toggle="modal" data-bs-target="#termsModal" style="color:#ff9017;"><strong>Terms of Use</strong></a> & <a href="#" data-bs-toggle="modal" data-bs-target="#privacyPolicyModal" style="color:#ff9017;"><strong>Privacy Policy</strong></a></small>
+            <small>By continuing, I agree to the 
+              <a href="#" data-bs-toggle="modal" data-bs-target="#termsModal" style="color:#ff9017;"><strong>Terms of Use</strong></a> 
+              & 
+              <a href="#" data-bs-toggle="modal" data-bs-target="#privacyPolicyModal" style="color:#ff9017;"><strong>Privacy Policy</strong></a>
+            </small>
           </div>
-
+        
           <div class="mt-3">
-            <button type="submit" class="btn btn-primary w-100" style="background:#ff9017; border:#ff9017;">Continue</button>
+            <button 
+              type="submit" 
+              class="btn btn-primary w-100" 
+              style="background:#ff9017; border:#ff9017;" 
+              id="submitButton">
+              Continue
+            </button>
           </div>
         </form>
-
-        <div class="mt-3 text-center">
-          <small>Having trouble logging in? <a href="#" data-bs-toggle="modal" data-bs-target="#getHelpModal"><strong style="color:#ff9017;">Get help</strong></a></small>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Terms Modal -->
-  <div class="modal fade" id="termsModal" tabindex="-1" aria-labelledby="termsModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="termsModalLabel">Terms of Use</h5>
-
-        </div>
-        <div class="modal-body">
-          <p>These are the Terms of Use for accessing and using the website. By using this website, you agree to comply with the following terms. <strong>Contact the developer:</strong></p>
-          <p><strong>Email:</strong> <a href="mailto:webdevrnt@gmail.com">webdevrnt@gmail.com</a></p>
-          <p><strong>Phone:</strong> +91 7905817391</p>
-          <p>If you violate any of these terms, you may be subject to account suspension and legal actions.</p>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Privacy Policy Modal -->
-  <div class="modal fade" id="privacyPolicyModal" tabindex="-1" aria-labelledby="privacyPolicyModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="privacyPolicyModalLabel">Privacy Policy</h5>
-      
-        </div>
-        <div class="modal-body">
-          <p>This is the privacy policy that governs how your personal data is collected and used. We ensure your privacy is respected and your data is protected. We do not share your information with third parties without your consent.</p>
-          <p><strong>If you need help with resetting your email or have any questions:</strong></p>
-          <p>Contact the developer: <a href="mailto:webdevrnt@gmail.com">webdevrnt@gmail.com</a></p>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Get Help Modal -->
-  <div class="modal fade" id="getHelpModal" tabindex="-1" aria-labelledby="getHelpModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="getHelpModalLabel">Get Help</h5>
         
+        <div class="mt-3 text-center">
+          <small>Having trouble logging in? 
+            <a href="#" data-bs-toggle="modal" data-bs-target="#getHelpModal">
+              <strong style="color:#ff9017;">Get help</strong>
+            </a>
+          </small>
         </div>
-        <div class="modal-body">
-          <p>If you are facing difficulties logging in, you can reset your email or account by contacting the developer.</p>
-          <p><strong>Contact Email:</strong> <a href="mailto:webdevrnt@gmail.com">webdevrnt@gmail.com</a></p>
-          <p><strong>Phone Number:</strong> +91 7905817391</p>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        </div>
+        
+        <script>
+          function handleFormSubmit(event) {
+            event.preventDefault(); // Prevent default form submission
+        
+            const button = document.getElementById('submitButton');
+            button.disabled = true; // Disable the button
+            button.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading...'; // Show spinner
+        
+            // Simulate form submission delay for UX (optional)
+            setTimeout(() => {
+              document.getElementById('login-form').submit(); // Proceed with form submission
+            }, 2000);
+          }
+        </script>
+          </section>
+
+ <!-- Terms Modal -->
+<div class="modal fade" id="termsModal" tabindex="-1" aria-labelledby="termsModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="termsModalLabel">Terms of Use</h5>
+      </div>
+      <div class="modal-body">
+        <p>These are the Terms of Use for accessing and using the website. By using this website, you agree to comply with the following terms. <strong>Contact the developer:</strong></p>
+        <p><strong>Name:</strong> Rudra Narayan Tiwari</p>
+        <p><strong>Email:</strong> <a href="mailto:webdevrnt@gmail.com">webdevrnt@gmail.com</a></p>
+        <p><strong>Phone:</strong> +91 7905817391</p>
+        <p><strong>LinkedIn:</strong> <a href="https://linkedin.com/in/rrnntt" target="_blank">linkedin.com/in/rrnntt</a></p>
+        <p>If you violate any of these terms, you may be subject to account suspension and legal actions.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
       </div>
     </div>
   </div>
+</div>
+
+<!-- Privacy Policy Modal -->
+<div class="modal fade" id="privacyPolicyModal" tabindex="-1" aria-labelledby="privacyPolicyModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="privacyPolicyModalLabel">Privacy Policy</h5>
+      </div>
+      <div class="modal-body">
+        <p>This is the privacy policy that governs how your personal data is collected and used. We ensure your privacy is respected and your data is protected. We do not share your information with third parties without your consent.</p>
+        <p><strong>If you need help with resetting your email or have any questions:</strong></p>
+        <p><strong>Name:</strong> Rudra Narayan Tiwari</p>
+        <p><strong>Email:</strong> <a href="mailto:webdevrnt@gmail.com">webdevrnt@gmail.com</a></p>
+        <p><strong>Phone:</strong> +91 7905817391</p>
+        <p><strong>LinkedIn:</strong> <a href="https://linkedin.com/in/rrnntt" target="_blank">linkedin.com/in/rrnntt</a></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Get Help Modal -->
+<div class="modal fade" id="getHelpModal" tabindex="-1" aria-labelledby="getHelpModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="getHelpModalLabel">Get Help</h5>
+      </div>
+      <div class="modal-body">
+        <p>If you are facing difficulties logging in, you can reset your email or account by contacting the developer.</p>
+        <p><strong>Name:</strong> Rudra Narayan Tiwari</p>
+        <p><strong>Email:</strong> <a href="mailto:webdevrnt@gmail.com">webdevrnt@gmail.com</a></p>
+        <p><strong>Phone Number:</strong> +91 7905817391</p>
+        <p><strong>LinkedIn:</strong> <a href="https://linkedin.com/in/rrnntt" target="_blank">linkedin.com/in/rrnntt</a></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 
 <style>
   /* Modal Styling */

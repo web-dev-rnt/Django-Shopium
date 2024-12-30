@@ -5,7 +5,6 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.core.paginator import EmptyPage,PageNotAnInteger,Paginator
 from django.shortcuts import HttpResponse
 from django.core.exceptions import ValidationError
-from .forms import Registration
 from django.contrib import messages , auth
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
@@ -32,6 +31,10 @@ from reportlab.lib import colors
 from reportlab.platypus import Table, TableStyle
 
 
+
+def cancel_session(request):
+    request.session.flush()  # Clear the session
+    return redirect('Home')  # Redirect to a home or login page
 
 
 def contact(request):
@@ -97,14 +100,14 @@ def submtreview(request, product_id):
     url = request.META.get('HTTP_REFERER')
 
     if request.method == 'POST':
-        form = ReviewForm(request.POST, request.FILES)  
+        form = ReviewForm(request.POST, request.FILES)
         if form.is_valid():
             data = form.save(commit=False)
             uploaded_files = request.FILES.getlist('images')
 
             # Loop through the first 5 files and assign them to the corresponding fields
             for i in range(min(len(uploaded_files), 5)):
-                field_name = f'img{i + 1}' 
+                field_name = f'img{i + 1}'
                 setattr(data, field_name, uploaded_files[i])
             data.product_id = product_id
             data.user_id = request.user.id
@@ -334,7 +337,7 @@ def payments(request):
 
             # Send order confirmation email
             mail_subject = 'Thank you for your order!'
-            message = render_to_string('myapp/order_received.html', {'user': request.user, 'order': order})
+            message = render_to_string('myapp/order_received.html', {'user': request.user, 'order': order,'payment':payment})
             to_email = request.user.email
             email = EmailMultiAlternatives(mail_subject, message, to=[to_email])
             email.attach_alternative(message, "text/html")
@@ -408,70 +411,6 @@ def order(request,total=0, quantity=0):
 
 
 
-# def login_form(request):
-#     if request.method == 'POST':
-#         email = request.POST['email']
-#         passw = request.POST['password']
-#         user = auth.authenticate(email=email,password=passw)
-#         if user is not None:
-#             try:
-#                 cart = Cart.objects.get(cart_id=_cart_id(request))
-#                 is_cart_item_exists = CartItems.objects.filter(cart=cart).exists()
-#                 if is_cart_item_exists:
-#                     cart_item = CartItems.objects.filter(cart=cart)
-
-#                     #Getting Production variation
-#                     list1 = []
-#                     for item in cart_item:
-#                         variation = item.variation.all()
-#                         list1.append(list(variation))
-
-#                     #get the cart items to access
-#                     cart_items = CartItems.objects.filter(user=user)
-#                     ex_var_list = []
-#                     id = []
-#                     for item in cart_items:
-#                         existing_variation = item.variation.all()
-#                         ex_var_list.append(list(existing_variation))
-#                         id.append(item.id)
-
-#                     for pr in list1:
-#                         if pr in ex_var_list:
-#                             index = ex_var_list.index(pr)
-#                             item_id = id[index]
-#                             item = CartItems.objects.get(id=item_id)
-#                             item.quantity += 1
-#                             item.user = user
-#                             item.save()
-#                         else:
-#                             cart_item = CartItems.objects.filter(cart=cart)
-#                             for item in cart_item:
-#                                 item.user = user
-#                                 item.save()
-
-#             except:
-#                 pass
-#             auth.login(request,user)
-#             url = request.META.get('HTTP_REFERER')
-#             try:
-#                 query = requests.utils.urlparse(url).query
-#                 params = dict(x.split('=') for x in query.split('&'))
-#                 if 'next' in params:
-#                     nextPage = params['next']
-#                     return redirect(nextPage)
-
-#             except:
-#                   return redirect('Dashboard')
-
-#         else:
-            
-#             messages.error(request,'Invalid login credentials please try again')
-#             return redirect('Login')      
-#     return render(request,'myapp/login.html')
-
-
-
-
 @login_required(login_url='Login')
 def logout(request):
     auth.logout(request)
@@ -479,19 +418,27 @@ def logout(request):
     return redirect('Login')
 
 def home(request):
-    # Filter products for the specified category
+    # Filter products for the specified categories
     men_bottom_wear_category = "men-bottom-wear"  # Replace with the slug or identifier of the category
+    women_top_wear_category = "women-top-wear"  # Replace with the slug or identifier for women top wear
+
     men_bottom_wear_products = Product.objects.filter(
-        is_available=True, 
+        is_available=True,
         category__slug=men_bottom_wear_category
     )
+
+    # Get the last 4 added products in the "women-top-wear" category
+    women_top_wear_products = Product.objects.filter(
+        is_available=True,
+        category__slug=women_top_wear_category
+    ).order_by('-created_at')[:4]  # Limit to 4 latest products
 
     # Get general products and latest products
     products = Product.objects.filter(is_available=True)[:8]
     latest_products = Product.objects.filter(is_available=True).order_by('-created_at')[:4]
 
     # Calculate discounts for general products
-    product_discounts = [] 
+    product_discounts = []
     for product in products:
         original_price = product.price
         selling_price = product.sprice
@@ -507,7 +454,7 @@ def home(request):
         product_discounts.append((product, percentage_discount))
 
     # Calculate discounts for latest products
-    latest_product_discounts = [] 
+    latest_product_discounts = []
     for product in latest_products:
         original_price = product.price
         selling_price = product.sprice
@@ -522,7 +469,7 @@ def home(request):
         percentage_discount = round(calculate_percentage_discount(original_price, selling_price))
         latest_product_discounts.append((product, percentage_discount))
 
-    # Calculate discounts for category-specific products
+    # Calculate discounts for category-specific products (men-bottom-wear)
     men_bottom_wear_discounts = []
     for product in men_bottom_wear_products:
         original_price = product.price
@@ -538,12 +485,31 @@ def home(request):
         percentage_discount = round(calculate_percentage_discount(original_price, selling_price))
         men_bottom_wear_discounts.append((product, percentage_discount))
 
+    # Calculate discounts for category-specific products (women-top-wear)
+    women_top_wear_discounts = []
+    for product in women_top_wear_products:
+        original_price = product.price
+        selling_price = product.sprice
+
+        def calculate_percentage_discount(original_price, selling_price):
+            if original_price == 0:
+                return 0  # Handle the case where the original price is zero to avoid division by zero
+
+            percentage_discount = ((original_price - selling_price) / original_price) * 100
+            return round(percentage_discount, 2)  # Round to two decimal places
+
+        percentage_discount = round(calculate_percentage_discount(original_price, selling_price))
+        women_top_wear_discounts.append((product, percentage_discount))
+
     context = {
         'product_discounts': product_discounts,
         'latest_product_discounts': latest_product_discounts,
-        'men_bottom_wear_discounts': men_bottom_wear_discounts
+        'men_bottom_wear_discounts': men_bottom_wear_discounts,
+        'women_top_wear_discounts': women_top_wear_discounts,  # Pass the last 4 added women-top-wear products with discounts
     }
     return render(request, 'myapp/index.html', context)
+
+
 
 
 
@@ -805,17 +771,23 @@ def search(request):
 
 @login_required(login_url='Login')
 def dashboard(request):
-    orders = Order.objects.order_by('-created_at').filter(user_id=request.user.id,is_ordered=True)
+    # Fetch orders by the logged-in user
+    orders = Order.objects.order_by('-created_at').filter(user=request.user, is_ordered=True)
     orders_count = orders.count()
+
     try:
-       userprofile = UserProfile.objects.get(user_id=request.user.id)
-    except:
-        userprofile = None   
+        # Fetch user profile using the logged-in user (no need for user_id directly)
+        userprofile = Account.objects.get(email=request.user)
+    except Account.DoesNotExist:
+        userprofile = None
+    print(request.user)
     context = {
-    'orders_count':orders_count,
-    'userprofile':userprofile
+        'orders_count': orders_count,
+        'userprofile': userprofile
     }
-    return render(request,'myapp/dashboard.html',context)
+
+    return render(request, 'myapp/dashboard.html', context)
+
 
 @login_required(login_url='Login')
 def checkout(request, total=0, quantity=0, cart_items=None):
@@ -829,34 +801,46 @@ def checkout(request, total=0, quantity=0, cart_items=None):
         if request.user.is_authenticated:
             cart_items = CartItems.objects.filter(user=request.user, is_active=True)
             # Retrieve the user's profile and account details
-            user_profile = UserProfile.objects.get(user=request.user)
-            account = request.user  # Account model is accessible directly through request.user
+            user_profile = Account.objects.get(email=request.user.email)  # Assuming Account model has email field
+            account = request.user  # The 'user' instance is linked with the Account model
         else:
             cart = Cart.objects.get(cart_id=_cart_id(request))
             cart_items = CartItems.objects.filter(cart=cart, is_active=True)
 
+        # Calculate the total and quantity for cart items
         for cart_item in cart_items:
             total += (cart_item.product.sprice * cart_item.quantity)
             quantity += cart_item.quantity
 
+        # Calculate tax (example: 2% tax)
         tax = (2 * total) / 100
         grand_total = total + tax
 
     except ObjectDoesNotExist:
-        # Log the error or handle it appropriately
+        # Handle cases where user or cart does not exist
         pass
 
+    # Prepare context with all the necessary data, including user profile details
     context = {
         'total': total,
         'quantity': quantity,
         'cart_items': cart_items,
         'tax': tax,
         'grand_total': grand_total,
-        # Pass the user profile and account details to the context for pre-filling the form
         'user_profile': user_profile,
         'account': account,
+        'first_name': user_profile.first_name if user_profile else '',
+        'last_name': user_profile.last_name if user_profile else '',
+        'phone_number': user_profile.phone_number if user_profile else '',
+        'address_line_1': user_profile.address_line_1 if user_profile else '',
+        'address_line_2': user_profile.address_line_2 if user_profile else '',
+        'city': user_profile.city if user_profile else '',
+        'state': user_profile.state if user_profile else '',
+        'country': user_profile.country if user_profile else '',
     }
+
     return render(request, 'myapp/checkout.html', context)
+
 
 
 def _cart_id(request):
@@ -873,58 +857,62 @@ def my_order(request):
     return render(request,'myapp/my_order.html',context)
 
 
-
-
-
+@login_required
 def editprofile(request):
-    # Get or create the user profile for the logged-in user
-    userprofile, created = UserProfile.objects.get_or_create(user=request.user)
-
     if request.method == 'POST':
-        form = UserForm(request.POST, instance=request.user)
-        pform = UserDetailsForm(request.POST, request.FILES)  # Include POST and FILES data
+        # Get the current user instance
+        user = request.user
 
-        if form.is_valid() and pform.is_valid():
-            # Save the user form data
-            form.save()
+        # Manually get data from request.POST (text inputs)
+        first_name = request.POST.get('first_name')
+        last_name = request.POST.get('last_name')
+        phone = request.POST.get('phone')
+        address_line_1 = request.POST.get('address_line_1')
+        address_line_2 = request.POST.get('address_line_2')
+        city = request.POST.get('city')
+        state = request.POST.get('state')
+        country = request.POST.get('country')
 
-            # Save the user profile data
-            userprofile.address_line_1 = pform.cleaned_data.get('address_line_1')
-            userprofile.address_line_2 = pform.cleaned_data.get('address_line_2')
-            userprofile.city = pform.cleaned_data.get('city')
-            userprofile.state = pform.cleaned_data.get('state')
-            userprofile.country = pform.cleaned_data.get('country')
+        # Handle image upload from request.FILES (if there is a new image)
+        img = request.FILES.get('img')
 
-            # Handle image upload if available
-            if request.FILES.get('profile_image'):
-                uploaded_image = request.FILES['profile_image']
-                userprofile.img = uploaded_image
+        # Update the user's attributes manually
+        user.first_name = first_name
+        user.last_name = last_name
+        user.phone_number = phone
+        user.address_line_1 = address_line_1
+        user.address_line_2 = address_line_2
+        user.city = city
+        user.state = state
+        user.country = country
 
-            userprofile.save()
+        # If an image was uploaded, update the image field
+        if img:
+            user.img = img
 
-            messages.success(request, 'Your profile has been updated.')
-            return redirect('EditProfile')
+        try:
+            user.full_clean()  # Optional: Perform full model validation
+        except ValidationError as e:
+            # Handle validation errors and display them in a message
+            messages.error(request, f"Error in saving profile: {', '.join(e.messages)}")
+            return redirect('editprofile')  # Redirect back to the edit profile page
+
+        # Save the updated user instance to the database
+        user.save()
+
+        # Show success message
+        messages.success(request, 'Your profile has been updated successfully.')
+
+        # Redirect to the profile edit page (or another page of your choice)
+        return redirect('EditProfile')
+
     else:
-        form = UserForm(instance=request.user)
-        
-        # Prepopulate the UserDetailsForm with existing data from the userprofile
-        pform = UserDetailsForm(initial={
-            'address_line_1': userprofile.address_line_1,
-            'address_line_2': userprofile.address_line_2,
-            'city': userprofile.city,
-            'state': userprofile.state,
-            'country': userprofile.country,
-        })
+        # If GET request, render the form with the current user's data pre-filled
+        return render(request, 'myapp/editprofile.html', {'user': request.user})
 
-    context = {
-        'form': form,
-        'pform': pform,
-        'userprofile': userprofile,
-    }
 
-    return render(request, 'myapp/editprofile.html', context)
 
-    
+
 
 def orderdetails(request,order_id):
     order_detail = OrderProduct.objects.filter(order__order_number=order_id)
@@ -946,7 +934,7 @@ def orderdetails(request,order_id):
 
 
 
-#OTP 
+#OTP
 import random
 from django.core.mail import send_mail
 
@@ -954,13 +942,61 @@ def generate_otp():
     return random.randint(100000, 999999)
 
 
+from django.utils.html import strip_tags
+
+from django.core.mail import EmailMultiAlternatives
+from django.utils.html import strip_tags
 
 def send_otp(email, otp):
-    subject = 'Your OTP Code'
-    message = f'Your OTP code is {otp}'
+    subject = 'Your OTP Code - Shopium'
+    # HTML email content with logo and additional details
+    html_content = f"""
+    <html>
+    <body style="font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f4f4f4;">
+        <div style="max-width: 600px; margin: 20px auto; background-color: #ffffff; padding: 20px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+            <h2 style="color: #333333; text-align: center;">Your OTP Code</h2>
+            <p style="color: #555555; text-align: center; font-size: 16px; line-height: 1.6;">
+                Dear User,<br><br>
+                Thank you for using Shopium! Your OTP code is:
+            </p>
+            <h3 style="text-align: center; color: #ff9017; font-size: 24px; margin: 10px 0;">{otp}</h3>
+            <p style="color: #555555; text-align: center; font-size: 14px; line-height: 1.6;">
+                Please enter this code to verify your identity. The OTP is valid for 10 minutes.
+            </p>
+            <hr style="border: none; border-top: 1px solid #dddddd; margin: 20px 0;">
+            <p style="color: #555555; text-align: center; font-size: 14px; line-height: 1.6;">
+                If you have any issues or need further assistance, feel free to contact our support team:
+            </p>
+            <p style="text-align: center; font-size: 14px;">
+                <strong>Developer Details:</strong><br>
+                Name: Rudra Narayan Tiwari<br>
+                LinkedIn: <a href="https://linkedin.com/in/rrnntt" style="color: #ff9017;">linkedin.com/in/rrnntt</a><br>
+                Email: <a href="mailto:webdevrnt@gmail.com" style="color: #ff9017;">webdevrnt@gmail.com</a><br>
+                Phone: +91 7905817391
+            </p>
+            <div style="text-align: center; margin-top: 20px;">
+                <a href="https://yourwebsite.com" style="display: inline-block; padding: 10px 20px; background-color: #ff9017; color: #ffffff; text-decoration: none; border-radius: 5px;">Visit Shopium</a>
+            </div>
+            <p style="text-align: center; font-size: 12px; color: #999999; margin-top: 20px;">
+                © 2024 Shopium. All rights reserved.
+            </p>
+        </div>
+    </body>
+    </html>
+    """
+
+    # Plain text fallback for email clients that don't support HTML
+    plain_message = strip_tags(html_content)
+
+    # Creating the email
     email_from = 'webdevrnt@gmail.com'  # Replace with your email
-    recipient_list = [email]
-    send_mail(subject, message, email_from, recipient_list)
+    msg = EmailMultiAlternatives(subject, plain_message, email_from, [email])
+    msg.attach_alternative(html_content, "text/html")
+
+    # Send the email
+    msg.send()
+
+
 
 
 
@@ -983,7 +1019,7 @@ def email_login_or_signup(request):
                 otp = generate_otp()
                 request.session['otp'] = otp  # Store OTP in session for verification
                 send_otp(email, otp)  # Send OTP to the provided email
-                
+
                 return redirect('verify_otp')  # Redirect to OTP verification page
         else:
             form = EmailLoginForm()
@@ -993,7 +1029,6 @@ def email_login_or_signup(request):
     else:
         # Step 2: After OTP verification, handle the next steps (user creation or login)
         return redirect('verify_otp')  # Redirect to OTP verification page if OTP already sent
-
 
 
 def verify_otp(request):
@@ -1014,7 +1049,7 @@ def verify_otp(request):
                 del request.session['otp']
 
                 email = request.session.get('email', '')
-                
+
                 # For existing users, log them in
                 if request.session.get('existing_user'):
                     try:
@@ -1027,16 +1062,18 @@ def verify_otp(request):
 
                         # Redirect to home page after successful login
                         return redirect('Home')
-                    except Account.DoesNotExist:
+                    except Account.DoesNotExist:  # Fixed 'User' to 'Account'
                         messages.error(request, "User does not exist.")
                         return redirect('email_login')
                 else:
-                    # For new user, create a user with null values for name and phone
+                    # For new user, create a user with blank values for profile fields
+                    first_name = ""  # Blank first name
+                    last_name = ""    # Blank last name
+
                     user = Account.objects.create_user(
                         email=email,
-                        first_name=None,  # Null values for new user fields
-                        last_name=None,
-                        phone_number=None,
+                        first_name=first_name,  # Blank first name
+                        last_name=last_name,    # Blank last name
                     )
                     user.is_active = True  # Set the user as active
                     user.save()  # Save the new user
@@ -1050,7 +1087,7 @@ def verify_otp(request):
                 # Invalid OTP, retry OTP verification
                 messages.error(request, 'Invalid OTP, please try again.')
                 return redirect('verify_otp')
-    
+
     else:
         otp_form = OTPForm()
 
