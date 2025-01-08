@@ -2,51 +2,107 @@
 {% block content %}
 
 <!-- ========================= SECTION CONTENT ========================= -->
+<style media="screen">
+    @media (max-width: 768px) {
+        .table thead {
+            font-size: 12px;
+        }
+
+        .table td, .table th {
+            padding: 8px;
+        }
+
+        /* Make product names and variations smaller on mobile */
+        .table td p {
+            font-size: 12px; /* Smaller font size for product names */
+        }
+
+        .table td img {
+            width: 40px; /* Adjust product image size */
+            height: 40px; /* Adjust product image height */
+        }
+
+        /* Optional: hide specific columns on mobile to reduce clutter */
+        .table td:nth-child(4), .table th:nth-child(4),  /* SR # */
+        .table td:nth-child(5), .table th:nth-child(5),  /* Billing Name */
+        .table td:nth-child(6), .table th:nth-child(6),  /* Order Total */
+        .table td:nth-child(7), .table th:nth-child(7) {  /* Date & Time */
+            display: none;
+        }
+    }
+</style>
 <section class="section-conten padding-y bg">
 
-<div class="container">
+<div class="container-fluid" style="padding-right: 10px; padding-left: 10px;"> <!-- Using container-fluid for full width, with padding -->
 	<div class="row">
- {% include 'myapp/dashboardsidebar.html' %}
-	<main class="col-md-9">
-		<article class="card">
-		<header class="card-header">
-			<strong class="d-inline-block mr-3">Your Order History</strong>
-		</header>
-		<div class="card-body">
-			<div class="row">
-			<div class="col-md-12">
-        <table class="table table-hover">
-          <thead>
-            <tr>
-              <th scope="col">Order #</th>
-              <th scope="col">Billing Name</th>
-              <th scope="col">Phone</th>
-              <th scope="col">Order Total</th>
-              <th scope="col">Date</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for o in orders %}
+    {% include 'myapp/dashboardsidebar.html' %}
+		<main class="col-md-9">
+			<article class="card">
+				<header class="card-header">
+					<strong class="d-inline-block mr-3">Your Order History</strong>
+				</header>
+				<div class="card-body">
+					<!-- Help Text for Order Details -->
+					<div class="alert alert-info" role="alert" style="font-size: 14px; padding: 10px;">
+                        <strong>Note:</strong> To view full details of an order, click on the order number.
+                    </div>
 
-            <tr>
-        <th scope="row">  <a href="{% url 'OrderDetail' o.order_number %}">{{o.order_number}}</a></th>	
-              <td>{{o.full_name}}</td>
-              <td>{{o.phone}}</td>
-              <td>{{o.order_total}}</td>
-              <td>{{o.created_at}}</td>
-            </tr>
+					<div class="row">
+						<div class="col-md-12">
+							<!-- Make the table responsive and enable horizontal scrolling on small screens -->
+							<div class="table-responsive" style="overflow-x: auto;"> <!-- Adding custom style for scrolling -->
+								<table class="table table-hover" style="table-layout: fixed;">
+									<thead>
+										<tr>
+											<th scope="col" class="text-center" style="width: 8%;">SR #</th> <!-- Reduced width for SR # -->
+											<th scope="col" class="text-center" style="width: 30%;">Product</th> <!-- Increased Product width -->
+											<th scope="col" class="text-center" style="width: 8%;">Order #</th>
+											<th scope="col" class="text-center" style="width: 10%;">Billing Name</th>
+											<th scope="col" class="text-center" style="width: 10%;">Phone</th>
+											<th scope="col" class="text-center" style="width: 12%;">Order Total</th> <!-- Reduced width for Order Total -->
+											<th scope="col" class="text-center" style="width: 12%;">Date & Time</th>
+										</tr>
+									</thead>
+									<tbody>
+										{% for o in orders %}
+										<tr>
+											<!-- Dynamic SR number using forloop.counter -->
+											<td class="text-center">{{ forloop.counter }}</td>
 
-            {% endfor %}
-          </tbody>
-        </table>
-			</div>
-				</div>
-			</div> <!-- row.// -->
-		</article> <!-- order-group.// -->
-	</main>
-</div> <!-- row.// -->
+											<!-- Loop through Order Products to display each product -->
+											<td>
+												{% for order_product in o.orderproduct_set.all %}
+													<!-- Display Product Image and Name -->
+													<div class="d-flex align-items-center">
+														<img src="{{ order_product.product.images.url }}" alt="{{ order_product.product.name }}" class="img-thumbnail" style="width: 40px; height: 40px;"> <!-- Smaller product image -->
+														<p style="font-size: 12px;">{{ order_product.product.name }}</p> <!-- Smaller product name font size -->
+													</div>
+													<!-- Loop through the variations and display them -->
+													{% for variation in order_product.variation.all %}
+														<p style="font-size: 12px;">{{ variation.variation_cat|title }}: {{ variation.variation_value }}</p> <!-- Smaller variation font size -->
+													{% endfor %}
+													<br>
+												{% endfor %}
+											</td>
+
+											<!-- Other Order Details -->
+											<th scope="row" class="text-center"><a href="{% url 'OrderDetail' o.order_number %}">{{o.order_number}}</a></th>
+											<td class="text-center">{{o.full_name}}</td>
+											<td class="text-center">{{o.phone}}</td>
+											<td class="text-center">{{o.order_total}}</td>
+											<td class="text-center">{{o.created_at}}</td>
+										</tr>
+										{% endfor %}
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div> <!-- row.// -->
+				</div> <!-- card-body.// -->
+			</article> <!-- order-group.// -->
+		</main>
+	</div> <!-- row.// -->
 </div>
-
 
 </section>
 <!-- ========================= SECTION CONTENT END// ========================= -->
