@@ -1,8 +1,8 @@
 [build]
 builder = "NIXPACKS"
-buildCommand = "pip install -r requirements.txt && python manage.py collectstatic --noinput && python manage.py migrate --noinput"
+buildCommand = "pip install -r requirements.txt"
 
 [deploy]
-startCommand = "gunicorn Shopium.wsgi --bind 0.0.0.0:$PORT --workers 2 --timeout 120"
+startCommand = "bash release.sh"
 restartPolicyType = "ON_FAILURE"
 restartPolicyMaxRetries = 10

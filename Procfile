@@ -1,1 +1,1 @@
-web: gunicorn Shopium.wsgi --bind 0.0.0.0:$PORT --workers 2 --timeout 120
+web: bash release.sh
